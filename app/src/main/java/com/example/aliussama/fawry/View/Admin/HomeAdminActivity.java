@@ -1,37 +1,28 @@
-package com.example.aliussama.fawry.Admin;
+package com.example.aliussama.fawry.View.Admin;
 
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.nfc.tech.NfcBarcode;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-import android.widget.CursorAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.example.aliussama.fawry.LoginActivity;
+import com.example.aliussama.fawry.View.LoginActivity;
 import com.example.aliussama.fawry.Model.Callbacks.UserDatabaseCallback;
 import com.example.aliussama.fawry.Model.UserDatabase;
 import com.example.aliussama.fawry.Model.UserModel;
@@ -42,8 +33,6 @@ import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 
-import java.util.ArrayList;
-
 public class HomeAdminActivity extends AppCompatActivity implements UserDatabaseCallback,
         SearchView.OnQueryTextListener {
 
@@ -53,7 +42,7 @@ public class HomeAdminActivity extends AppCompatActivity implements UserDatabase
     SearchView searchView;
     SearchManager searchManager;
     EditText searchEditText;
-
+    ProgressBar mProgressBarMoreThanAPI20;
     EditText usernameEditText, emailEditText;
     ImageView qrCodeImageView;
     UserDatabase mUserDatabase;
@@ -82,6 +71,7 @@ public class HomeAdminActivity extends AppCompatActivity implements UserDatabase
             usernameEditText = findViewById(R.id.activity_home_admin_user_name_edit_text);
             emailEditText = findViewById(R.id.activity_home_admin_user_email_edit_text);
             qrCodeImageView = findViewById(R.id.activity_home_admin_generated_code_image_view);
+            mProgressBarMoreThanAPI20 = findViewById(R.id.activity_home_admin_determinateBar_moreThan_20);
 
             mThread = new HandlerThread(HANDLER_THREAD_NAME);
             mThread.start();
@@ -176,6 +166,9 @@ public class HomeAdminActivity extends AppCompatActivity implements UserDatabase
                 break;
             case R.id.activity_home_admin_add_user_button:
                 try {
+
+                    mProgressBarMoreThanAPI20.setVisibility(View.VISIBLE);
+
                     if (usernameEditText.getText().toString().isEmpty()) {
                         usernameEditText.setError(getResources().getString(R.string.enter_username));
                     } else if (emailEditText.getText().toString().isEmpty()) {
@@ -244,6 +237,9 @@ public class HomeAdminActivity extends AppCompatActivity implements UserDatabase
             mChangeUIHandler.post(new Runnable() {
                 @Override
                 public void run() {
+
+                    mProgressBarMoreThanAPI20.setVisibility(View.GONE);
+
                     Toast.makeText(HomeAdminActivity.this, "تم اضافة المستخدم بنجاح", Toast.LENGTH_SHORT).show();
                     qrCodeImageView.setImageResource(R.color.grey_light);
                     usernameEditText.setText("");

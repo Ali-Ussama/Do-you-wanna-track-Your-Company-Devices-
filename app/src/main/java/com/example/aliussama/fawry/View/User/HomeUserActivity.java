@@ -1,8 +1,6 @@
-package com.example.aliussama.fawry.User;
+package com.example.aliussama.fawry.View.User;
 
 import android.Manifest;
-import android.app.SearchManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -16,7 +14,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -28,21 +25,17 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.aliussama.fawry.LoginActivity;
+import com.example.aliussama.fawry.View.LoginActivity;
 import com.example.aliussama.fawry.Model.Callbacks.OnAddMachineListener;
 import com.example.aliussama.fawry.Model.GPSTracker;
 import com.example.aliussama.fawry.Model.MachineModel;
 import com.example.aliussama.fawry.Model.UserDatabase;
 import com.example.aliussama.fawry.R;
-import com.example.aliussama.fawry.ScannerActivity;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
+import com.example.aliussama.fawry.View.ScannerActivity;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 
 
 public class HomeUserActivity extends AppCompatActivity implements View.OnClickListener,

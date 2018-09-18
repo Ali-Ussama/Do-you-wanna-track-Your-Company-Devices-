@@ -1,16 +1,11 @@
-package com.example.aliussama.fawry;
+package com.example.aliussama.fawry.View;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.example.aliussama.fawry.Admin.AllMachinesRecAdapter;
-import com.example.aliussama.fawry.User.HomeUserActivity;
+import com.example.aliussama.fawry.View.User.HomeUserActivity;
 import com.google.zxing.Result;
 
 import me.dm7.barcodescanner.zxing.ZXingScannerView;

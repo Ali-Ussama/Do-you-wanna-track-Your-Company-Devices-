@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Admin.HomeAdminActivity">
+    tools:context=".View.Admin.HomeAdminActivity">
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
@@ -34,6 +34,20 @@
             </android.support.v7.widget.Toolbar>
         </android.support.design.widget.AppBarLayout>
 
+        <ProgressBar
+            android:id="@+id/activity_home_admin_determinateBar_moreThan_20"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:indeterminateBehavior="repeat"
+            android:indeterminateDuration="50"
+            app:layout_constraintTop_toBottomOf="@id/activity_home_admin_app_bar_layout"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            style="@android:style/Widget.Material.ProgressBar.Horizontal"
+            tools:targetApi="lollipop"
+            android:visibility="gone"/>
+
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -43,7 +57,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/activity_home_admin_app_bar_layout">
+            app:layout_constraintTop_toBottomOf="@id/activity_home_admin_determinateBar_moreThan_20">
 
             <TextView
                 android:id="@+id/activity_home_admin_code_text_view"

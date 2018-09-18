@@ -67,7 +67,6 @@ public class UserDatabase {
                                 }
                                 break;
                             }
-
                         }
                         if (!founded) {
                             Log.i(TAG, "User Code is not found in Firebase database");

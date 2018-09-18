@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".Admin.SearchActivity">
+    tools:context=".View.Admin.SearchActivity">
 
     <item android:id="@+id/search_activity_item_search"
         android:title="@string/search"

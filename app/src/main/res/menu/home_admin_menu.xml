@@ -4,8 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item android:id="@+id/sign_out"
-        android:title="@string/sign_out"
-        app:showAsAction="collapseActionView"/>
+    android:title="@string/sign_out"
+    app:showAsAction="collapseActionView" />
 
     <item android:id="@+id/home_admin_search"
         android:title="@string/search"

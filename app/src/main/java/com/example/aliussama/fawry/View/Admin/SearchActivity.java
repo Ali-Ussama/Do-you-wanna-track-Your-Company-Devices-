@@ -1,4 +1,4 @@
-package com.example.aliussama.fawry.Admin;
+package com.example.aliussama.fawry.View.Admin;
 
 import android.Manifest;
 import android.app.SearchManager;
@@ -25,9 +25,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.example.aliussama.fawry.LoginActivity;
+import com.example.aliussama.fawry.View.LoginActivity;
 import com.example.aliussama.fawry.Model.Callbacks.ReadingAllDatabaseCallback;
 import com.example.aliussama.fawry.Model.Callbacks.SearchActivityCallback;
 import com.example.aliussama.fawry.Model.MachineModel;
@@ -53,6 +54,7 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
     SearchView searchView;
     SearchManager searchManager;
     EditText searchEditText;
+    ProgressBar mProgressBarMoreThanAPI20;
 
     HandlerThread mThread;
     Handler mBackgroundHandler;
@@ -97,6 +99,9 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
             toolbar = findViewById(R.id.activity_search_toolbar);
             setSupportActionBar(toolbar);
 
+            //Progress Bar
+            mProgressBarMoreThanAPI20 = findViewById(R.id.activity_search_determinateBar_moreThan_20);
+
             //Threads & Handlers
             mThread = new HandlerThread(HANDLER_THREAD_NAME);
             mThread.start();
@@ -133,6 +138,9 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
         try {
             //reading all users and machines in database
             if (mBackgroundHandler != null) {
+
+                mProgressBarMoreThanAPI20.setVisibility(View.VISIBLE);
+
                 mBackgroundHandler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -348,6 +356,10 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
                     public void run() {
                         try {
                             Log.i("onAllUsersSuccess", "Assigning mUsers to users");
+
+                            mProgressBarMoreThanAPI20.setVisibility(View.GONE);
+
+
                             users = mUsers;
                             if (Query != null && !Query.isEmpty()) {
                                 ArrayList<UserModel> searchResult = new ArrayList<>();
@@ -379,6 +391,9 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
 
     @Override
     public void onAllUsersFailure(Exception e) {
+
+        mProgressBarMoreThanAPI20.setVisibility(View.GONE);
+
         e.printStackTrace();
     }
 
@@ -394,6 +409,9 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
                     public void run() {
                         try {
                             Log.i("onAllUsersSuccess", "Assigning mUsers to users");
+
+                            mProgressBarMoreThanAPI20.setVisibility(View.GONE);
+
                             //Assigning machines returned from database
                             //to the machines adapter list
                             machines = mMachines;
@@ -441,6 +459,9 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
 
     @Override
     public void onAllMachinesFailure(String message) {
+
+        mProgressBarMoreThanAPI20.setVisibility(View.GONE);
+
         Log.i("SearchActivity", "" + message);
     }
 

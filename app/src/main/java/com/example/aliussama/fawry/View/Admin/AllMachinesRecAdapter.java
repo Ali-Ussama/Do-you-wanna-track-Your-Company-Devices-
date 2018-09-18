@@ -1,4 +1,4 @@
-package com.example.aliussama.fawry.Admin;
+package com.example.aliussama.fawry.View.Admin;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
