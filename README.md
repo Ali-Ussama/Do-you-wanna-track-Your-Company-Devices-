@@ -3,17 +3,20 @@
 ## Description
 This App is a database of Fawry Machines
 
-### 1- The admin create distributor account, which every distributor has a QR Code.
-### 2- The distributor can login using username/password, or using QR code scanner.
-### 3- The distributor when he sell or deliver a Fawry Machine to a client, he add this machine into the system with its SN (serial number), client's (name, phone and location).
-## 4- The admin can view all the devices that it has been sold to clients with all details through his account.
+1- The admin create distributor account, which every distributor has a QR Code.
+2- The distributor can login using username/password, or using QR code scanner.
+3- The distributor when he sell or deliver a Fawry Machine to a client, he add this machine into the system with its SN (serial number), client's (name, phone and location).
+4- The admin can view all the devices that it has been sold to clients with all details through his account.
 
 ## Libraries and Tools
 - Firebase (Database)
-- Google Map SDK API
-- Fragment Activity
+- Google Map SDK API (Place Picker)
+- Activity
 - Interface and Callbacks
 - GPS
+- Zxing library generator and scanner of -> QR Code and Serial Number
+- Recycler View
+
 
 ## Screenshots
 
