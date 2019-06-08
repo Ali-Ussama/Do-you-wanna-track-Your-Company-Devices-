@@ -1,4 +1,4 @@
-package com.example.aliussama.fawry.View.Admin;
+package com.example.aliussama.fawry.View.User;
 
 import android.Manifest;
 import android.app.SearchManager;
@@ -26,29 +26,30 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
-import com.example.aliussama.fawry.View.LoginActivity;
 import com.example.aliussama.fawry.Model.Callbacks.ReadingAllDatabaseCallback;
 import com.example.aliussama.fawry.Model.Callbacks.SearchActivityCallback;
 import com.example.aliussama.fawry.Model.MachineModel;
 import com.example.aliussama.fawry.Model.UserDatabase;
 import com.example.aliussama.fawry.Model.UserModel;
 import com.example.aliussama.fawry.R;
+import com.example.aliussama.fawry.View.Admin.AllMachinesRecAdapter;
+import com.example.aliussama.fawry.View.LoginActivity;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 
 import java.util.ArrayList;
 
-public class SearchActivity extends AppCompatActivity implements SearchView.OnQueryTextListener,
+public class UserSearchActivity extends AppCompatActivity implements SearchView.OnQueryTextListener,
         ReadingAllDatabaseCallback,
         SearchActivityCallback {
-    final String TAG = "SearchActivity";
+
+    final String TAG = "UserSearchActivity";
     final String HANDLER_THREAD_NAME = "SearchActivityThread";
     //declare Place Pick Builder request code var
     private int PLACE_PICKER_REQUEST = 1;
 
-    private final String ADMIN = "ADMIN";
+    private final String USER = "USER";
 
     String Query;
 
@@ -63,19 +64,18 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
     Handler mChangeUIHandler;
 
     UserDatabase mUserDatabase;
-    RecyclerView mUsersRecyclerView, mMachinesRecyclerView;
-    ArrayList<UserModel> users;
+
+    RecyclerView  mMachinesRecyclerView;
     ArrayList<MachineModel> machines;
 
-    AllUsersRecAdapter mAllUsersRecAdapter;
     AllMachinesRecAdapter mAllMachinesRecAdapter;
 
-    ConstraintLayout usersLayout, machinesLayout;
+    ConstraintLayout machinesLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_search);
+        setContentView(R.layout.activity_user_search);
 
         try {
             Query = getIntent().getStringExtra("query");
@@ -104,29 +104,21 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
             //Progress Bar
             mProgressBarMoreThanAPI20 = findViewById(R.id.activity_search_determinateBar_moreThan_20);
 
+            mUserDatabase = new UserDatabase();
+
             //Threads & Handlers
             mThread = new HandlerThread(HANDLER_THREAD_NAME);
             mThread.start();
             mBackgroundHandler = new Handler(mThread.getLooper());
             mChangeUIHandler = new Handler(Looper.getMainLooper());
 
-            usersLayout = findViewById(R.id.activity_search_users_constraints_layout1);
             machinesLayout = findViewById(R.id.activity_search_users_constraints_layout2);
-
-            mUserDatabase = new UserDatabase();
-
-            //Users RecyclerView
-            users = new ArrayList<>();
-            mUsersRecyclerView = findViewById(R.id.activity_search_users_recycler_view);
-            mUsersRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-            mAllUsersRecAdapter = new AllUsersRecAdapter(users, this, this);
-            mUsersRecyclerView.setAdapter(mAllUsersRecAdapter);
 
             //Machines RecyclerView
             machines = new ArrayList<>();
             mMachinesRecyclerView = findViewById(R.id.activity_search_machines_recycler_view);
             mMachinesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-            mAllMachinesRecAdapter = new AllMachinesRecAdapter(machines, this, ADMIN);
+            mAllMachinesRecAdapter = new AllMachinesRecAdapter(machines, this, USER);
             mMachinesRecyclerView.setAdapter(mAllMachinesRecAdapter);
 
         } catch (Exception e) {
@@ -148,8 +140,7 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
                     public void run() {
                         try {
                             if (mUserDatabase != null) {
-                                mUserDatabase.getAllUsers(SearchActivity.this);
-                                mUserDatabase.getAllMachines(SearchActivity.this);
+                                mUserDatabase.getAllMachines(UserSearchActivity.this);
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -162,16 +153,17 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
         }
     }
 
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.home_admin_menu, menu);
+        menuInflater.inflate(R.menu.home_user_menu, menu);
 
         // Get the SearchView and set the searchable configuration
         //declare Search Manager
         searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         //Declare Search View and associate it to it's icon in menu in toolbar
-        searchView = (SearchView) menu.findItem(R.id.home_admin_search).getActionView();
+        searchView = (SearchView) menu.findItem(R.id.home_user_search).getActionView();
 
         //change Search view EditText TextColor to white
         searchEditText = searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
@@ -222,14 +214,17 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
     public boolean onQueryTextSubmit(String query) {
         try {
             if (query != null && !query.isEmpty()) {
-                ArrayList<UserModel> searchResult = new ArrayList<>();
-                for (UserModel user : users) {
-                    if (user.getName().toLowerCase().contains(query.toLowerCase()) || user.getPhone().toLowerCase().contains(query.toLowerCase())) {
-                        searchResult.add(user);
+                ArrayList<MachineModel> searchResult = new ArrayList<>();
+                for (MachineModel machine : machines) {
+                    if (machine.getmClientName().toLowerCase().contains(query.toLowerCase()) ||
+                            machine.getmMachineId().toLowerCase().contains(query.toLowerCase()) ||
+                            machine.getmClientPhone().toLowerCase().contains(query.toLowerCase()) ||
+                            machine.getmAddress().toLowerCase().contains(query.toLowerCase())) {
+                        searchResult.add(machine);
                     }
                 }
-                mAllUsersRecAdapter.NotifyAdapter(searchResult);
-                Log.i("onAllUsersSuccess", "Users Adapter has been notified");
+                mAllMachinesRecAdapter.NotifyAdapter(searchResult);
+                Log.i("onAllMachinesSuccess", "Machines Adapter has been notified");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -242,22 +237,6 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
         try {
             if (newText != null && !newText.isEmpty()) {
 
-                //Search in Users List
-                ArrayList<UserModel> usersSearchResult = new ArrayList<>();
-                for (UserModel user : users) {
-                    if (user.getName().toLowerCase().contains(newText.toLowerCase()) || user.getPhone().toLowerCase().contains(newText.toLowerCase())) {
-                        usersSearchResult.add(user);
-                    }
-                }
-                if (usersSearchResult.size() > 0) {
-                    usersLayout.setVisibility(View.VISIBLE);
-                    mAllUsersRecAdapter.NotifyAdapter(usersSearchResult);
-                } else {
-                    usersLayout.setVisibility(View.GONE);
-                    Log.i("onQueryTextChange", "No users matches the search query");
-                }
-
-                Log.i("onQueryTextChange", "Users Adapter has been notified");
 
                 //Search in Machines List
                 ArrayList<MachineModel> machinesSearchResult = new ArrayList<>();
@@ -272,7 +251,6 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
                         machinesSearchResult.add(machine);
                     }
                 }
-
 
                 // if search result list contains any result
                 if (machinesSearchResult.size() > 0) {
@@ -298,7 +276,7 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
         super.onActivityResult(requestCode, resultCode, data);
         try {
 
-            Log.i("SearchActivity", "onActivityResult");
+            Log.i(TAG, "onActivityResult");
             // handle result of place picker builder
             // if request code equals PLACE_PICKER_REQUEST equals 1
             if (requestCode == PLACE_PICKER_REQUEST) {
@@ -309,23 +287,23 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
                     int position = 0;
                     try {
                         SharedPreferences sharedPreferences = getSharedPreferences("AllMachinesRecAdapterPosition", Context.MODE_PRIVATE);
-                        Log.i("SearchActivity", "read position from sharedPreferences");
+                        Log.i(TAG, "read position from sharedPreferences");
                         position = sharedPreferences.getInt("position", 0);
-                        Log.i("SearchActivity", "position has been read from sharedPreferences = " + position);
+                        Log.i(TAG, "position has been read from sharedPreferences = " + position);
 
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                     //if place in not null
                     if (place != null) {
-                        Log.i("SearchActivity", "onActivityResult : " + place.getAddress());
+                        Log.i(TAG, "onActivityResult : " + place.getAddress());
                         //handle returned place
-                        Log.i("SearchActivity", "current view holder position = " + position);
-                        Log.i("SearchActivity", "current view holder machine ID = " + ((AllMachinesRecAdapter.viewHolder) mMachinesRecyclerView.findViewHolderForLayoutPosition(position)).machineID.getText().toString());
+                        Log.i(TAG, "current view holder position = " + position);
+                        Log.i(TAG, "current view holder machine ID = " + ((AllMachinesRecAdapter.viewHolder) mMachinesRecyclerView.findViewHolderForLayoutPosition(position)).machineID.getText().toString());
 
                         mAllMachinesRecAdapter.onPlaceSelected(place, ((AllMachinesRecAdapter.viewHolder) mMachinesRecyclerView.findViewHolderForLayoutPosition(position)));
                     } else {
-                        Log.i("SearchActivity", "onActivityResult : place is null");
+                        Log.i(TAG, "onActivityResult : place is null");
 
                     }
                 }
@@ -348,54 +326,15 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
     }
 
     //---------------------------------Callbacks---------------------------------------------------
+
     @Override
-    public void onAllUsersSuccess(final ArrayList<UserModel> mUsers) {
-        try {
-            if (mUsers != null) {
-                mChangeUIHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            Log.i("onAllUsersSuccess", "Assigning mUsers to users");
+    public void onAllUsersSuccess(ArrayList<UserModel> users) {
 
-                            mProgressBarMoreThanAPI20.setVisibility(View.GONE);
-
-
-                            users = mUsers;
-                            if (Query != null && !Query.isEmpty()) {
-                                ArrayList<UserModel> searchResult = new ArrayList<>();
-                                for (UserModel user : users) {
-                                    if (user.getId().toLowerCase().contains(Query.toLowerCase()) || user.getPhone().contains(Query)) {
-                                        searchResult.add(user);
-                                    }
-                                }
-                                if (searchResult.size() > 0) {
-                                    usersLayout.setVisibility(View.VISIBLE);
-                                    mAllUsersRecAdapter.NotifyAdapter(searchResult);
-                                    Log.i("onAllUsersSuccess", "Users Adapter has been notified");
-
-                                } else {
-                                    usersLayout.setVisibility(View.GONE);
-                                    Log.i("onAllUsersSuccess", "No users matches the search query");
-                                }
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
     public void onAllUsersFailure(Exception e) {
 
-        mProgressBarMoreThanAPI20.setVisibility(View.GONE);
-
-        e.printStackTrace();
     }
 
     @Override
@@ -467,143 +406,46 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
     }
 
     @Override
-    public void onUserItemDelete(final UserModel user) {
-        if (mUserDatabase == null)
-            mUserDatabase = new UserDatabase();
-        if (mBackgroundHandler != null) {
-            mBackgroundHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        mUserDatabase.deleteUser(user);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
+    public void onUserItemDelete(UserModel user) {
 
-        }
     }
 
     @Override
-    public void onUserItemUpdate(final UserModel user) {
-        if (mUserDatabase == null)
-            mUserDatabase = new UserDatabase();
-        if (mBackgroundHandler != null) {
-            mBackgroundHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        mUserDatabase.updateUser(user);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
+    public void onUserItemUpdate(UserModel user) {
 
-        }
     }
 
     @Override
-    public void onMachineItemDelete(final MachineModel machine) {
-        try {
-            if (mThread == null || mBackgroundHandler == null) {
-                mThread = new HandlerThread(HANDLER_THREAD_NAME);
-                mBackgroundHandler = new Handler(mThread.getLooper());
-            }
-            if (mUserDatabase == null) {
-                mUserDatabase = new UserDatabase();
-            }
-            mBackgroundHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        mUserDatabase.deleteMachine(machine, SearchActivity.this);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void onMachineItemDelete(MachineModel machine) {
+
     }
 
     @Override
-    public void onMachineDeletedSuccess(final boolean status) {
-        try {
-            if (mChangeUIHandler == null)
-                mChangeUIHandler = new Handler(Looper.getMainLooper());
-            mChangeUIHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    if (status) {
-                        Toast.makeText(SearchActivity.this, getString(R.string.machine_deleted_successfully), Toast.LENGTH_LONG).show();
-                    } else {
-                        Toast.makeText(SearchActivity.this, getString(R.string.error_message_to_user), Toast.LENGTH_LONG).show();
-                    }
-                }
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void onMachineItemUpdate(MachineModel machine) {
+
+    }
+
+    @Override
+    public void onMachineDeletedSuccess(boolean status) {
+
     }
 
     @Override
     public void onMachineDeleteFailure(Exception e) {
-        e.printStackTrace();
+
     }
 
     @Override
-    public void onMachineItemUpdate(final MachineModel machine) {
-        try {
-            if (mThread == null || mBackgroundHandler == null) {
-                mThread = new HandlerThread(HANDLER_THREAD_NAME);
-                mBackgroundHandler = new Handler(mThread.getLooper());
-            }
-            if (mUserDatabase == null) {
-                mUserDatabase = new UserDatabase();
-            }
-            Log.i("onMachineItemUpdate", "machine ID" + machine.getmMachineId());
+    public void onMachineUpdatedSuccess(boolean status) {
 
-            mBackgroundHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        Log.i("mBackgroundThread", "machine ID" + machine.getmMachineId());
-                        mUserDatabase.updateMachine(machine, SearchActivity.this);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void onMachineUpdatedSuccess(final boolean status) {
-        try {
-            if (mChangeUIHandler == null)
-                mChangeUIHandler = new Handler(Looper.getMainLooper());
-            mChangeUIHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    if (status) {
-                        Toast.makeText(SearchActivity.this, getString(R.string.machine_updated_successfully), Toast.LENGTH_LONG).show();
-                    } else {
-                        Toast.makeText(SearchActivity.this, getString(R.string.error_message_to_user), Toast.LENGTH_LONG).show();
-                    }
-                }
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
     public void onMachineUpdatedFailure(Exception e) {
-        e.printStackTrace();
+
     }
+
+
+
+
 }

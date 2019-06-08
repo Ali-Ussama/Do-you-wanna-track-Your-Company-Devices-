@@ -101,8 +101,9 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
                     android:maxLines="3"
-                    android:gravity="center_vertical|start"
-                    android:text="13 El-Khalifa Al Ma'moon, New Cairo, Egypt"
+                    android:text="sdfs"
+                    android:textDirection="ltr"
+                    android:gravity="start|center_vertical"
                     app:layout_constraintEnd_toStartOf="@id/AMRVRI_location_ic"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/AMRVRI_phone_textView"/>
@@ -115,7 +116,6 @@
                     android:layout_marginTop="4dp"
                     android:gravity="center"
                     android:paddingBottom="8dp"
-                    android:text="123-456-789"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/AMRVRI_locator_ic" />
@@ -130,7 +130,8 @@
                 android:layout_margin="16dp"
                 android:visibility="gone">
 
-                <android.support.design.widget.TextInputLayout android:id="@+id/AMRVRI_machine_code_input_layout"
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/AMRVRI_machine_code_input_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:layout_constraintStart_toStartOf="parent"

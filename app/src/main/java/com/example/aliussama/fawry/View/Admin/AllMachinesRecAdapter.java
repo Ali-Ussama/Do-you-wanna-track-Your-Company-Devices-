@@ -39,11 +39,15 @@ public class AllMachinesRecAdapter extends RecyclerView.Adapter<AllMachinesRecAd
     private ArrayList<MachineModel> data;
     private boolean mSpinnerCreated = false;
     private SearchActivityCallback mCallback;
+    private String userType;
 
+    private final String USER = "USER";
+    private final String ADMIN = "ADMIN";
 
-    AllMachinesRecAdapter(ArrayList<MachineModel> mData, SearchActivityCallback callback) {
+    public AllMachinesRecAdapter(ArrayList<MachineModel> mData, SearchActivityCallback callback,String type) {
         data = mData;
         mCallback = callback;
+        userType = type;
     }
 
     @Override
@@ -112,11 +116,11 @@ public class AllMachinesRecAdapter extends RecyclerView.Adapter<AllMachinesRecAd
         return data.size();
     }
 
-    class viewHolder extends RecyclerView.ViewHolder implements View.OnTouchListener, AdapterView.OnItemSelectedListener, View.OnClickListener {
+    public class viewHolder extends RecyclerView.ViewHolder implements View.OnTouchListener, AdapterView.OnItemSelectedListener, View.OnClickListener {
 
         EditText machineCodeEditText;
 
-        TextView machineID, clientName, mClientPhone, mAddress;
+        public TextView machineID, clientName, mClientPhone, mAddress;
         Spinner mOptionsSpinner;
         ConstraintLayout row_item_layout, update_layout;
 
@@ -161,7 +165,7 @@ public class AllMachinesRecAdapter extends RecyclerView.Adapter<AllMachinesRecAd
                 update_layout = v.findViewById(R.id.AMRVRI_update_layout);
 
                 ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(v.getContext(),
-                        R.array.machines_row_item_options_spinner, android.R.layout.simple_spinner_item);
+                        R.array.user_machines_row_item_options_spinner, android.R.layout.simple_spinner_item);
 
                 // Specify the layout to use when the list of choices appears
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -209,22 +213,37 @@ public class AllMachinesRecAdapter extends RecyclerView.Adapter<AllMachinesRecAd
                 Log.i("onItemSelected", "selected item position = " + i);
                 Log.i("onItemSelect", "flag = " + mSpinnerCreated);
 
-                if (mSpinnerCreated) {
-                    Log.i("onItemSelected", "item position" + i);
-                    if (i == 0) {
-                        Log.i("onItemSelected", "الغاء");
-                        update_layout.setVisibility(View.GONE);
-                    } else if (i == 1) {
-                        deleteMachine(view);
-                        mOptionsSpinner.setSelection(getAdapterPosition(), false);
-                        mOptionsSpinner.setSelection(0, true);
-                    } else if (i == 2) {
-                        updateMachine();
-                    } else if (i == 3) {
-                        //share current location
-                        shareCurrentLocation(view);
-                        mOptionsSpinner.setSelection(getAdapterPosition(), false);
-                        mOptionsSpinner.setSelection(0, true);
+                if (userType.matches(ADMIN)) {
+                    if (mSpinnerCreated) {
+                        Log.i("onItemSelected", "item position" + i);
+                        if (i == 0) {
+                            Log.i("onItemSelected", "الغاء");
+                            update_layout.setVisibility(View.GONE);
+                        } else if (i == 1) {
+                            deleteMachine(view);
+                            mOptionsSpinner.setSelection(getAdapterPosition(), false);
+                            mOptionsSpinner.setSelection(0, true);
+                        } else if (i == 2) {
+                            updateMachine();
+                        } else if (i == 3) {
+                            //share current location
+                            shareCurrentLocation(view);
+                            mOptionsSpinner.setSelection(getAdapterPosition(), false);
+                            mOptionsSpinner.setSelection(0, true);
+                        }
+                    }
+                }else{
+                    if (mSpinnerCreated) {
+                        Log.i("onItemSelected", "item position" + i);
+                        if (i == 0) {
+                            Log.i("onItemSelected", "الغاء");
+                            update_layout.setVisibility(View.GONE);
+                        } else if (i == 1) {
+                            //share current location
+                            shareCurrentLocation(view);
+                            mOptionsSpinner.setSelection(getAdapterPosition(), false);
+                            mOptionsSpinner.setSelection(0, true);
+                        }
                     }
                 }
             } catch (Exception e) {

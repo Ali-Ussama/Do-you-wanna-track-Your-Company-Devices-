@@ -19,7 +19,7 @@
                 android:id="@+id/activity_login_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:title="تسجيل الدخول"
+                app:title="@string/login"
                 app:titleTextColor="@color/white"
                 style="@style/Base.ThemeOverlay.AppCompat.ActionBar"/>
 
@@ -66,7 +66,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:layoutDirection="ltr"
+            android:layoutDirection="rtl"
             android:textDirection="ltr"
             app:layout_constraintBottom_toTopOf="@+id/activity_login_code_input_layout"
             app:layout_constraintEnd_toEndOf="parent"
@@ -76,7 +76,7 @@
                 android:id="@+id/activity_login_EmailEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/enter_your_email"
+                android:hint="@string/enter_username"
                 android:inputType="textEmailAddress"
                 android:textSize="14sp" />
 
@@ -87,31 +87,23 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:layoutDirection="ltr"
+            android:layoutDirection="rtl"
             android:textDirection="ltr"
+            app:passwordToggleEnabled="true"
             app:layout_constraintBottom_toTopOf="@+id/activity_login_loginButton"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
 
-                <EditText
+                <android.support.design.widget.TextInputEditText
                     android:id="@+id/activity_login_CodeEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textDirection="ltr"
                     android:hint="@string/enter_your_code"
-                    android:inputType="textPassword"
+                    android:inputType="numberPassword"
                     android:textSize="14sp" />
 
         </android.support.design.widget.TextInputLayout>
-
-        <ImageView
-            android:id="@+id/activity_login_code_visibility"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_baseline_visibility_off_24px"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            app:layout_constraintBottom_toBottomOf="@id/activity_login_code_input_layout"
-            app:layout_constraintEnd_toEndOf="@id/activity_login_code_input_layout"/>
 
         <Button
             android:id="@+id/activity_login_loginButton"
@@ -127,19 +119,6 @@
             android:layoutDirection="rtl"
             android:background="@color/colorPrimaryDark"/>
 
-        <Button
-            android:id="@+id/activity_login_scan_qr_code_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layoutDirection="rtl"
-            app:layout_constraintTop_toBottomOf="@id/activity_login_loginButton"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:text="@string/scan_qr_code"
-            android:textColor="@color/colorAccent"
-            android:textStyle="bold"
-            android:background="@color/colorPrimary"/>
 
     </android.support.constraint.ConstraintLayout>
 

@@ -10,10 +10,10 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.CAMERA" />
 
+
     <uses-feature
         android:name="android.hardware.camera"
         android:required="true" />
-
     <uses-feature
         android:name="android.hardware.camera2"
         android:required="true" />
@@ -32,12 +32,16 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".View.LoginActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            tools:ignore="InnerclassSeparator">
-        </activity>
 
-        <activity android:name=".View.Admin.HomeAdminActivity"
+
+        <activity
+            android:name=".View.LoginActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+
+            tools:ignore="InnerclassSeparator" />
+
+        <activity
+            android:name=".View.Admin.HomeAdminActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             tools:ignore="InnerclassSeparator">
             <intent-filter>
@@ -48,20 +52,16 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
 
-            <!-- <intent-filter> -->
-            <!-- <action android:name="android.intent.action.MAIN" /> -->
-
-
-            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
-            <!-- </intent-filter> -->
         </activity>
 
-        <activity android:name=".View.ScannerActivity"
+        <activity
+            android:name=".View.ScannerActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:parentActivityName=".View.LoginActivity"
             tools:ignore="InnerclassSeparator" />
 
-        <activity android:name=".View.Admin.SearchActivity"
+        <activity
+            android:name=".View.Admin.SearchActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             tools:ignore="InnerclassSeparator">
             <intent-filter>
@@ -80,20 +80,36 @@
              sign the APK for publishing.
              You can define the keys for the debug and release targets in src/debug/ and src/release/. 
         -->
-        <meta-data android:name="com.google.android.geo.API_KEY"
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name=".View.User.HomeUserActivity"
+        <activity
+            android:name=".View.User.HomeUserActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             tools:ignore="InnerclassSeparator" />
 
-        <activity android:name=".SplashActivity"
+        <activity
+            android:name=".SplashActivity"
             android:configChanges="keyboardHidden|orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".View.User.UserSearchActivity"
+            tools:ignore="InnerclassSeparator">
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
         </activity>
     </application>
 

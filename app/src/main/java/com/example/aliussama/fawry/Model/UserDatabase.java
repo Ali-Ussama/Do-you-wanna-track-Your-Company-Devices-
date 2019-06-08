@@ -31,9 +31,10 @@ public class UserDatabase {
     private final String UPDATE_USER_TAG = "updateUser";
 
 
-    public void CheckIfUserExists(final String userCode, final String email, final UserDatabaseCallback callback) {
+    public void CheckIfUserExists(final String phone, final String email, final UserDatabaseCallback callback) {
 
         final String TAG = "CheckIfUserExists";
+
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
         Log.i(TAG, "Firebase reference is initialized");
 
@@ -48,15 +49,15 @@ public class UserDatabase {
                     Log.i(TAG, "Declaring var to check found code");
                     boolean founded = false;
                     if (codes != null) {
-
+                        Log.i(TAG, "username: " + email + " password: " + phone);
                         Log.i(TAG, "returned codes are not null");
                         for (String code : codes.keySet()) {
-                            String mEmail = codes.get(code).get("email").toLowerCase();
+                            String mPhone = codes.get(code).get("phone").toLowerCase();
                             String id = codes.get(code).get("id").toLowerCase();
                             String type = codes.get(code).get("type").toLowerCase();
 
-                            Log.i(TAG, "current Code is : " + id);
-                            if (mEmail.matches(email) && id.matches(userCode)) {
+                            Log.i(TAG, "current username is : " + id + "\n phone : " + mPhone);
+                            if (mPhone.matches(phone.toLowerCase()) && id.matches(email.toLowerCase())) {
                                 Log.i(TAG, "User Code is found in Firebase database");
                                 founded = true;
                                 Log.i(TAG, "Sending callback with true value");
@@ -138,7 +139,7 @@ public class UserDatabase {
                             for (String key : result.keySet()) {
                                 Log.i(GET_ALL_USERS_TAG, "user = " + result.get(key).get("name"));
                                 users.add(new UserModel(key, result.get(key).get("id"), result.get(key).get("name"),
-                                        result.get(key).get("email"), result.get(key).get("type")));
+                                        result.get(key).get("phone"), result.get(key).get("type")));
                             }
 
                             if (callback != null) {

@@ -12,14 +12,10 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.method.HideReturnsTransformationMethod;
-import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
-import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -40,10 +36,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public static String mScan_Text_Result;
 
     EditText CodeEditText, EmailEditText;
-    Button LoginButton, mScanButton;
-    ImageView codeVisibility;
+    Button LoginButton;
     ProgressBar mProgressBarMoreThanAPI20, mProgressBarLessThanAPI21;
-    String CodeValue, EmailValue;
+    String mPhoneNumber, mUsername;
 
     UserDatabase mUserDatabase;
     HandlerThread mThread;
@@ -73,12 +68,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             LoginButton = findViewById(R.id.activity_login_loginButton);
             LoginButton.setOnClickListener(this);
 
-            codeVisibility = findViewById(R.id.activity_login_code_visibility);
-            codeVisibility.setOnClickListener(this);
-
-            mScanButton = findViewById(R.id.activity_login_scan_qr_code_button);
-            mScanButton.setOnClickListener(this);
-
             mProgressBarMoreThanAPI20 = findViewById(R.id.activity_login_determinateBar_moreThan_20);
 
             mProgressBarLessThanAPI21 = findViewById(R.id.activity_login_determinateBar_lessThan_21);
@@ -95,6 +84,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
+    //TODO REMOVE
     @Override
     protected void onResume() {
         try {
@@ -115,12 +105,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
                 Log.i(LOGIN_ACTIVITY_TAG, "onResume: username = " + result[0]);
                 Log.i(LOGIN_ACTIVITY_TAG, "onResume: email = " + result[1]);
-                String userCode = mScan_Text_Result;
-                String userEmail = result[1];
+                String phone = result[0];
+                String email = result[1];
                 if (mUserDatabase == null) {
                     mUserDatabase = new UserDatabase();
                 }
-                mUserDatabase.CheckIfUserExists(userCode, userEmail, this);
+                mUserDatabase.CheckIfUserExists(phone, email, this);
 
                 mScan_Text_Result = null;
             }
@@ -149,58 +139,25 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     } else if (CodeEditText.getText().toString().isEmpty()) {
                         CodeEditText.setError(getResources().getString(R.string.required));
                     } else {
-                        CodeValue = CodeEditText.getText().toString();
-                        EmailValue = EmailEditText.getText().toString();
+                        mPhoneNumber = CodeEditText.getText().toString();
+                        mUsername = EmailEditText.getText().toString();
 
-                        if (!Patterns.EMAIL_ADDRESS.matcher(EmailValue).matches()) {
-                            EmailEditText.setError(getResources().getString(R.string.email_error));
-                        } else {
-                            mBackgroundHandler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    try {
-                                        mUserDatabase.CheckIfUserExists(CodeValue, EmailValue, LoginActivity.this);
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
+                        mBackgroundHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    mUserDatabase.CheckIfUserExists(mPhoneNumber, mUsername, LoginActivity.this);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
                                 }
-                            });
-                        }
+                            }
+                        });
+
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
                 break;
-            case R.id.activity_login_code_visibility:
-                try {
-                    if (CodeEditText.getTransformationMethod() == PasswordTransformationMethod.getInstance()) {
-                        CodeEditText.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-                        codeVisibility.setImageResource(R.drawable.ic_baseline_visibility_24px);
-                    } else {
-                        CodeEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
-                        codeVisibility.setImageResource(R.drawable.ic_baseline_visibility_off_24px);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                break;
-            case R.id.activity_login_scan_qr_code_button:
-                try {
-                    if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) ==
-                            PackageManager.PERMISSION_GRANTED) {
-
-                        Log.i(ON_CREATE_TAG, "CAMERA Permission is granted");
-
-                        //Calling ScannerActivity to Scan QR Code
-                        Intent intent = new Intent(new Intent(this, ScannerActivity.class));
-                        intent.putExtra("activity_type", "loginActivity");
-                        startActivity(intent);
-                    } else {
-                        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 1);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
         }
     }
 
@@ -246,8 +203,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 mChangeUIHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                            mProgressBarMoreThanAPI20.setVisibility(View.GONE);
-                            mProgressBarLessThanAPI21.setVisibility(View.GONE);
+                        mProgressBarMoreThanAPI20.setVisibility(View.GONE);
+                        mProgressBarLessThanAPI21.setVisibility(View.GONE);
 
                         if (state) {
                             addUserIntoOfflineDatabase(type);
@@ -256,7 +213,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             updateUI(type);
                         } else {
                             Log.i(LOGIN_ACTIVITY_TAG, "onLoginSuccess state is false, Entered code not found");
-                            Toast.makeText(LoginActivity.this, "البريد الالكتروني/الرقم السري غير صحيح", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LoginActivity.this, "اسم المستخدم او كلمة المرور غير صحيح", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -304,7 +261,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             e.printStackTrace();
         }
     }
-
 
 
 }

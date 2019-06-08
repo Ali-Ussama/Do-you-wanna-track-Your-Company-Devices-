@@ -1,6 +1,8 @@
 package com.example.aliussama.fawry.View.User;
 
 import android.Manifest;
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -14,6 +16,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -25,6 +28,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.aliussama.fawry.View.Admin.SearchActivity;
 import com.example.aliussama.fawry.View.LoginActivity;
 import com.example.aliussama.fawry.Model.Callbacks.OnAddMachineListener;
 import com.example.aliussama.fawry.Model.GPSTracker;
@@ -39,7 +43,7 @@ import com.google.android.gms.maps.model.LatLngBounds;
 
 
 public class HomeUserActivity extends AppCompatActivity implements View.OnClickListener,
-        OnAddMachineListener {
+        OnAddMachineListener, SearchView.OnQueryTextListener {
 
     final String HOME_USER_TAG = "HomeUserActivity";
     Toolbar toolbar;
@@ -57,6 +61,7 @@ public class HomeUserActivity extends AppCompatActivity implements View.OnClickL
     private Location mCurrentLocation;
 
     public int mCurrentItemPosition;
+
     //declare Place Pick Builder request code var
     private int PLACE_PICKER_REQUEST = 1;
 
@@ -75,6 +80,12 @@ public class HomeUserActivity extends AppCompatActivity implements View.OnClickL
 
     private MachineModel mMachine;
 
+    private SearchView searchView;
+
+    private SearchManager searchManager;
+
+    private EditText searchEditText;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,7 +102,6 @@ public class HomeUserActivity extends AppCompatActivity implements View.OnClickL
                             PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this,
                         new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
-
 
             }
             //toolbar
@@ -138,6 +148,8 @@ public class HomeUserActivity extends AppCompatActivity implements View.OnClickL
                     startActivity(new Intent(this, LoginActivity.class));
                     finish();
                     return true;
+                case R.id.home_user_search:
+                    return true;
                 default:
                     return super.onOptionsItemSelected(item);
             }
@@ -164,6 +176,22 @@ public class HomeUserActivity extends AppCompatActivity implements View.OnClickL
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.home_user_menu, menu);
+
+        // Get the SearchView and set the searchable configuration
+        //declare Search Manager
+        searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        //Declare Search View and associate it to it's icon in menu in toolbar
+        searchView = (SearchView) menu.findItem(R.id.home_user_search).getActionView();
+        //change Search view EditText TextColor to white
+        searchEditText = searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
+        searchEditText.setTextColor(getResources().getColor(R.color.white));
+        searchEditText.setHintTextColor(getResources().getColor(R.color.white));
+
+        // Assumes current activity is the searchable activity
+        if (searchManager != null) {
+            searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+            searchView.setOnQueryTextListener(this);
+        }
         return true;
     }
 
@@ -398,5 +426,22 @@ public class HomeUserActivity extends AppCompatActivity implements View.OnClickL
     @Override
     public void onAddMachineFailure(Exception e) {
         Log.i("onAddMachineFailure", e.getMessage());
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        try {
+            Intent intent = new Intent(this, UserSearchActivity.class);
+            intent.putExtra("query", query);
+            startActivity(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        return false;
     }
 }

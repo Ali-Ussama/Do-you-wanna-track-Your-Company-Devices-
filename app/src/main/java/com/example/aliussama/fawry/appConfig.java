@@ -13,7 +13,7 @@ public class appConfig extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        Locale.setDefault(new Locale("ar"));
+        Locale.setDefault(new Locale("AR"));
 
 
     }
