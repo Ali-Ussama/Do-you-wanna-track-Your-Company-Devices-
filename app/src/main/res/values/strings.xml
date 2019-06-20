@@ -1,10 +1,11 @@
 <resources>
     <string name="app_name">Fawry</string>
-    <string name="enter_your_code">Password</string>
+    <string name="enter_your_code">كلمة المرور</string>
     <string name="login">تسجيل الدخول</string>
-    <string name="enter_your_email">Email</string>
+    <string name="enter_your_email">البريد الالكترونى</string>
     <string name="required">مطلوب</string>
     <string name="email_error">البريد الكتروني غير صحيح</string>
+    <string name="username_error">اسم المتخدم غير صحيح</string>
     <string name="admin">admin</string>
     <string name="user">user</string>
     <string name="home_page">الرئيسية</string>
@@ -12,22 +13,21 @@
     <string name="enter_username">ادخل اسم المستخدم</string>
     <string name="enter_user_code">ادخل كود المستخدم</string>
     <string name="add_user">إضافة مستخدم</string>
-    <string name="enter_user_email">أدخل البريد الإكتروني</string>
+    <string name="enter_user_phone">أدخل رقم الهاتف</string>
     <string name="generate_new_code">أنشئ كود جديد</string>
-    <string name="scan_qr_code">تسجيل الدخول برمز الاستجابة السريعة</string>
     <string name="representative_code">كود المندوب</string>
     <string name="search_result">نتائج البحث</string>
-    <string name="users">المستخدمين</string>
+    <string name="users">users</string>
     <string name="machines">آلات فوري</string>
     <string name="representatives">المناديب</string>
     <string name="update_user">تعديل بيانات المستخدم</string>
     <string name="send_to">ارسال الى</string>
+    <string name="username">username</string>
 
     <string-array name="users_row_item_options_spinner">
         <item>الغاء</item>
         <item>حذف</item>
         <item>تعديل</item>
-        <item>مشاركة الباركود</item>
     </string-array>
 
     <string-array name="machines_row_item_options_spinner">
@@ -37,16 +37,21 @@
         <item>عرض المكان</item>
     </string-array>
 
-    <string name="title_activity_maps">Map</string>
+    <string-array name="user_machines_row_item_options_spinner">
+        <item>الغاء</item>
+        <item>عرض المكان</item>
+    </string-array>
+
+    <string name="title_activity_maps">الخريطة</string>
     <string name="machine_code">ادخل كود الماكينه</string>
     <string name="client_name">ادخل اسم العميل</string>
     <string name="add_location">حدد موقعك</string>
     <string name="add_machine_button">اضافة ماكينة</string>
 
-    <string name="GPSAlertDialogTitle">GPS is setting</string>
-    <string name="GPSAlertDialogMessage">GPS is not enabled. Do you want to go to setting menu</string>
-    <string name="setting">Settings</string>
-    <string name="cancel">Cancel</string>
+    <string name="GPSAlertDialogTitle">اعداد تحديد الموقع</string>
+    <string name="GPSAlertDialogMessage">تحديد الموقع غير مفعل. هل تريد تفعيله ؟</string>
+    <string name="setting">الاعدادات</string>
+    <string name="cancel">الغاء</string>
     <string name="client_phone">ادخل هاتف العميل</string>
     <string name="please_choose_your_current_location">من فضلك حدد موقعك الحالي</string>
     <string name="machineAlreadyExists">هذه الماكينة موجوده بالفعل!</string>
@@ -54,18 +59,24 @@
     <string name="update_machine_button">تعديل الماكينه</string>
 
     <string name="error_message_to_user">عفوا حدث خطأ، حاول مجدداً</string>
-    <string name="machine_deleted_successfully">تم حذف الماكينة بنجاح</string>
     <string name="machine_updated_successfully">تم تعديل الماكينة بنجاح</string>
 
     <!--Local Database strings-->
-    <string name="shared_preferences_file_name">users</string>
-    <string name="type_key">type</string>
-    <string name="default_value_of_shared_preferences_string">None</string>
+    <string name="shared_preferences_file_name">المستخدمين</string>
+    <string name="type_key">النوع</string>
+    <string name="default_value_of_shared_preferences_string" translatable="false">None</string>
     <string name="sign_out">تسجيل الخروج</string>
 
     <string name="cancel_updating">الغاء</string>
     <string name="delete">حذف</string>
     <string name="update">تعديل</string>
     <string name="share_barcode">مشاركة الباركود</string>
+    <string name="report">استخراج تقرير</string>
+
+    <string name="no_storage_available">لا يوجد مساحة في الذاكرة تكفى</string>
+    <string name="report_saved">تم استخراج التقرير</string>
+    <string name="database_version" translatable="false">databaseVersion</string>
+    <string name="machine_deleted_successfully">تم حذف الماكينة بنجاح</string>
+    <string name="scan_qr_code">تسجيل الدخول برمز الاستجابة السريعة</string>
 
 </resources>

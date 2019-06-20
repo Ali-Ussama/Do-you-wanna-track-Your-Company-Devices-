@@ -1,20 +1,8 @@
-package com.example.aliussama.fawry.Admin;
+package com.example.aliussama.fawry.View.Admin;
 
-import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.net.Uri;
-import android.provider.MediaStore;
-import android.support.constraint.ConstraintLayout;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.CardView;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -24,21 +12,17 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.aliussama.fawry.Model.Callbacks.SearchActivityCallback;
 import com.example.aliussama.fawry.Model.UserModel;
 import com.example.aliussama.fawry.R;
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.MultiFormatWriter;
-import com.google.zxing.WriterException;
-import com.google.zxing.common.BitMatrix;
-import com.journeyapps.barcodescanner.BarcodeEncoder;
 
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
 public class AllUsersRecAdapter extends RecyclerView.Adapter<AllUsersRecAdapter.viewHolder> {
@@ -64,20 +48,13 @@ public class AllUsersRecAdapter extends RecyclerView.Adapter<AllUsersRecAdapter.
     @Override
     public void onBindViewHolder(final viewHolder holder, int position) {
         try {
-            MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
-            BitMatrix bitMatrix = multiFormatWriter.encode(users.get(position).getId(), BarcodeFormat.QR_CODE, 200, 200);
-            BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
-            Bitmap bitmap = barcodeEncoder.createBitmap(bitMatrix);
-            holder.qrCodeImageView.setImageBitmap(bitmap);
-
             holder.userName.setText(users.get(position).getName());
-            holder.userEmail.setText(users.get(position).getEmail());
+            holder.userEmail.setText(users.get(position).getPhone());
 
             holder.updateUsernameEditText.setText(users.get(position).getName());
-            holder.updateEmailEditText.setText(users.get(position).getEmail());
-            holder.updateQrCodeImageView.setImageBitmap(bitmap);
+            holder.updateEmailEditText.setText(users.get(position).getPhone());
 
-        } catch (WriterException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -97,7 +74,6 @@ public class AllUsersRecAdapter extends RecyclerView.Adapter<AllUsersRecAdapter.
             AdapterView.OnItemSelectedListener,
             View.OnTouchListener, View.OnLongClickListener {
 
-        ImageView qrCodeImageView;
         TextView userName, userEmail;
         Spinner options;
         CardView cardView;
@@ -105,8 +81,6 @@ public class AllUsersRecAdapter extends RecyclerView.Adapter<AllUsersRecAdapter.
         ConstraintLayout update_layout;
 
         EditText updateUsernameEditText, updateEmailEditText;
-        ImageView updateQrCodeImageView;
-        FloatingActionButton updateQrCodeFab;
         Button updateUserButton;
 
         private boolean mSpinnerCreated = false;
@@ -117,17 +91,14 @@ public class AllUsersRecAdapter extends RecyclerView.Adapter<AllUsersRecAdapter.
             super(v);
             try {
                 this.v = v;
-                qrCodeImageView = v.findViewById(R.id.all_users_rec_row_item_qr_code_imageView);
                 userName = v.findViewById(R.id.all_users_rec_row_item_username_textView);
                 userEmail = v.findViewById(R.id.all_users_rec_row_item_email_textView2);
                 options = v.findViewById(R.id.all_users_rec_row_item_options_spinner);
                 cardView = v.findViewById(R.id.all_users_rec_row_item_cardView);
                 row_item_layout = v.findViewById(R.id.all_users_rec_row_item_layout);
                 update_layout = v.findViewById(R.id.all_users_rec_row_item_update_layout);
-                updateEmailEditText = v.findViewById(R.id.all_users_rec_row_item_user_email_edit_text);
+                updateEmailEditText = v.findViewById(R.id.all_users_rec_row_item_user_phone_edit_text);
                 updateUsernameEditText = v.findViewById(R.id.all_users_rec_row_item_user_name_edit_text);
-                updateQrCodeImageView = v.findViewById(R.id.all_users_rec_row_item_generated_code_image_view);
-                updateQrCodeFab = v.findViewById(R.id.all_users_rec_row_item_generate_code_fab_button);
                 updateUserButton = v.findViewById(R.id.all_users_rec_row_item_update_user_button);
 
                 ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(context,
@@ -141,9 +112,7 @@ public class AllUsersRecAdapter extends RecyclerView.Adapter<AllUsersRecAdapter.
                 options.setSelection(getAdapterPosition(), false);
                 options.setOnTouchListener(this);
                 options.setOnItemSelectedListener(this);
-                updateQrCodeFab.setOnClickListener(this);
                 updateUserButton.setOnClickListener(this);
-                qrCodeImageView.setOnLongClickListener(this);
 
                 v.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
@@ -168,7 +137,6 @@ public class AllUsersRecAdapter extends RecyclerView.Adapter<AllUsersRecAdapter.
             arrayAdapter.add(v.getContext().getString(R.string.cancel_updating));
             arrayAdapter.add(v.getContext().getString(R.string.delete));
             arrayAdapter.add(v.getContext().getString(R.string.update));
-            arrayAdapter.add(v.getContext().getString(R.string.share_barcode));
 
             builderSingle.setNegativeButton(v.getContext().getString(R.string.cancel_updating), new DialogInterface.OnClickListener() {
                 @Override
@@ -200,14 +168,6 @@ public class AllUsersRecAdapter extends RecyclerView.Adapter<AllUsersRecAdapter.
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
-                        } else if (choice.matches(v.getContext().getString(R.string.share_barcode))) {
-                            try {
-                                options.setSelection(getAdapterPosition(), false);
-                                options.setSelection(0, true);
-                                shareBarcode();
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
                         }
                     }
                 }
@@ -226,15 +186,14 @@ public class AllUsersRecAdapter extends RecyclerView.Adapter<AllUsersRecAdapter.
                 if (updateUsernameEditText.getText().toString().isEmpty()) {
                     updateUsernameEditText.setError(context.getResources().getString(R.string.enter_username));
                 } else if (updateEmailEditText.getText().toString().isEmpty()) {
-                    updateEmailEditText.setError(context.getResources().getString(R.string.enter_user_email));
+                    updateEmailEditText.setError(context.getResources().getString(R.string.enter_user_phone));
                 } else {
                     try {
-                        final String code = (updateUsernameEditText.getText().toString().concat(",").concat(updateEmailEditText.getText().toString())).toLowerCase();
 
-                        if (userCode != null && !userCode.isEmpty() && code.matches(userCode)) {
-                            users.get(getAdapterPosition()).setEmail(updateEmailEditText.getText().toString());
+
+                            users.get(getAdapterPosition()).setPhone(updateEmailEditText.getText().toString());
                             users.get(getAdapterPosition()).setName(updateUsernameEditText.getText().toString());
-                            users.get(getAdapterPosition()).setId(code);
+                            users.get(getAdapterPosition()).setId(updateUsernameEditText.getText().toString());
                             update_layout.setVisibility(View.GONE);
                             row_item_layout.setVisibility(View.VISIBLE);
                             options.setSelection(getAdapterPosition(), false);
@@ -244,41 +203,10 @@ public class AllUsersRecAdapter extends RecyclerView.Adapter<AllUsersRecAdapter.
                             } else {
                                 Log.i("AllUsersRecAdapter", "onClick : Home Admin Activity callback is null");
                             }
-                        } else if (userCode == null) {
-                            Toast.makeText(v.getContext(), "من فضلك أنشئ الكود الخاس بالمستخدم", Toast.LENGTH_SHORT).show();
-                        } else if (!code.matches(userCode)) {
-                            Toast.makeText(v.getContext(), "الكود لا يتماثل مع البيانات المدخله، من فضلك انشئ الكود", Toast.LENGTH_SHORT).show();
-                        }
+
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                }
-            } else if (id == R.id.all_users_rec_row_item_generate_code_fab_button) {
-                try {
-                    if (!updateUsernameEditText.getText().toString().isEmpty() && !updateEmailEditText.getText().toString().isEmpty()) {
-                        userCode = (updateUsernameEditText.getText().toString().concat(",").concat(updateEmailEditText.getText().toString())).toLowerCase();
-                        MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
-                        try {
-                            BitMatrix bitMatrix = multiFormatWriter.encode(userCode, BarcodeFormat.QR_CODE, 200, 200);
-                            BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
-                            Bitmap bitmap = barcodeEncoder.createBitmap(bitMatrix);
-                            updateQrCodeImageView.setImageBitmap(bitmap);
-                        } catch (WriterException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    if (updateUsernameEditText.getText().toString().isEmpty()) {
-                        updateUsernameEditText.setError(context.getResources().getString(R.string.enter_username));
-                    }
-                    if (updateEmailEditText.getText().toString().isEmpty()) {
-                        if (context != null && context instanceof HomeAdminActivity)
-                            updateEmailEditText.setError(v.getContext().getResources().getString(R.string.enter_user_email));
-                        else {
-                            Log.i("AllUsersRecAdapter", "onClick : homeAdminActivity context is null");
-                        }
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
             }
         }
@@ -308,14 +236,6 @@ public class AllUsersRecAdapter extends RecyclerView.Adapter<AllUsersRecAdapter.
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-                    } else if (i == 3) {
-                        try {
-                            options.setSelection(getAdapterPosition(), false);
-                            options.setSelection(0, true);
-                            shareBarcode();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
                     }
                     mSpinnerCreated = false;
                 }
@@ -333,37 +253,7 @@ public class AllUsersRecAdapter extends RecyclerView.Adapter<AllUsersRecAdapter.
             }
         }
 
-        private void shareBarcode() {
-            try {
-                MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
-                BitMatrix bitMatrix = multiFormatWriter.encode(users.get(getAdapterPosition()).getId(), BarcodeFormat.QR_CODE, 200, 200);
-                BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
-                Bitmap bitmap = barcodeEncoder.createBitmap(bitMatrix);
 
-                if (ContextCompat.checkSelfPermission(v.getContext(), android.Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
-                        PackageManager.PERMISSION_GRANTED) {
-                    Log.i("onItemSelected", "WRITE_EXTERNAL_STORAGE permission not granted");
-
-                    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-                    String path = MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, "Code", null);
-                    Log.i(TAG, "" + path);
-                    Uri uriToImage = Uri.parse(path);
-
-                    Intent shareIntent = new Intent();
-                    shareIntent.setAction(Intent.ACTION_SEND);
-                    shareIntent.putExtra(Intent.EXTRA_STREAM, uriToImage);
-                    shareIntent.setType("image/jpeg");
-                    v.getContext().startActivity(Intent.createChooser(shareIntent, v.getResources().getString(R.string.send_to)));
-                } else {
-                    Log.i("onItemSelected", "WRITE_EXTERNAL_STORAGE permission is not granted");
-                    ActivityCompat.requestPermissions(mActivity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                            1);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
 
         @Override
         public void onNothingSelected(AdapterView<?> adapterView) {
@@ -384,10 +274,7 @@ public class AllUsersRecAdapter extends RecyclerView.Adapter<AllUsersRecAdapter.
             Log.i(TAG, "onLongClick() view id = " + view.getId());
             Log.i(TAG, "onLongClick() row item id = " + R.id.all_users_rec_row_item_cardView);
 
-            if (view.getId() == R.id.all_users_rec_row_item_qr_code_imageView) {
-                shareBarcode();
-                return true;
-            } else if (view.getId() == R.id.all_users_rec_row_item_cardView) {
+            if (view.getId() == R.id.all_users_rec_row_item_cardView) {
                 showChoiceDialog(view);
                 return true;
             }

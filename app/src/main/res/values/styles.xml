@@ -12,6 +12,8 @@
         <item name="android:editTextColor">@color/white</item>
     </style>
 
-
+    <style name="CircularProgress" parent="Theme.AppCompat.Light">
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
 
 </resources>

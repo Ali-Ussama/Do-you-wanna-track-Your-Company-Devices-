@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layoutDirection="rtl"
-    tools:context=".View.Admin.SearchActivity">
+    tools:context=".View.User.UserSearchActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -50,10 +50,11 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/activity_search_users_constraints_layout1"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/activity_search_determinateBar_moreThan_20" >
+            app:layout_constraintTop_toBottomOf="@id/activity_search_determinateBar_moreThan_20"
+            android:visibility="gone">
 
             <View
                 android:id="@+id/activity_search_line1"
@@ -101,7 +102,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/activity_search_users_constraints_layout2"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/activity_search_users_constraints_layout1"
@@ -143,7 +144,7 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/activity_search_machines_recycler_view"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/activity_search_line4" />

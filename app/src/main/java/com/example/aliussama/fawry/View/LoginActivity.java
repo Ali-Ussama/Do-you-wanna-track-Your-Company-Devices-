@@ -1,34 +1,27 @@
-package com.example.aliussama.fawry;
+package com.example.aliussama.fawry.View;
 
-import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.text.method.HideReturnsTransformationMethod;
-import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
-import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.example.aliussama.fawry.Admin.HomeAdminActivity;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.aliussama.fawry.Model.Callbacks.UserDatabaseCallback;
 import com.example.aliussama.fawry.Model.UserDatabase;
-import com.example.aliussama.fawry.User.HomeUserActivity;
-import com.google.zxing.Result;
-
-import me.dm7.barcodescanner.zxing.ZXingScannerView;
+import com.example.aliussama.fawry.R;
+import com.example.aliussama.fawry.View.Admin.HomeAdminActivity;
+import com.example.aliussama.fawry.View.User.HomeUserActivity;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener,
         UserDatabaseCallback {
@@ -41,9 +34,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public static String mScan_Text_Result;
 
     EditText CodeEditText, EmailEditText;
-    Button LoginButton, mScanButton;
-    ImageView codeVisibility;
-    String CodeValue, EmailValue;
+    Button LoginButton;
+    ProgressBar mProgressBarMoreThanAPI20, mProgressBarLessThanAPI21;
+    String mPhoneNumber, mUsername;
 
     UserDatabase mUserDatabase;
     HandlerThread mThread;
@@ -56,9 +49,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         try {
             setContentView(R.layout.activity_login);
-
-            checkIfLoggedInBefore();
             Init();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -68,13 +60,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         try {
 
             CodeEditText = findViewById(R.id.activity_login_CodeEditText);
+
             EmailEditText = findViewById(R.id.activity_login_EmailEditText);
+
             LoginButton = findViewById(R.id.activity_login_loginButton);
             LoginButton.setOnClickListener(this);
-            codeVisibility = findViewById(R.id.activity_login_code_visibility);
-            codeVisibility.setOnClickListener(this);
-            mScanButton = findViewById(R.id.activity_login_scan_qr_code_button);
-            mScanButton.setOnClickListener(this);
+
+            mProgressBarMoreThanAPI20 = findViewById(R.id.activity_login_determinateBar_moreThan_20);
+
+            mProgressBarLessThanAPI21 = findViewById(R.id.activity_login_determinateBar_lessThan_21);
+
             mUserDatabase = new UserDatabase();
 
             mThread = new HandlerThread(HANDLER_THREAD_NAME);
@@ -87,29 +82,39 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
+    //TODO REMOVE
     @Override
     protected void onResume() {
-        try {
-            Log.i(LOGIN_ACTIVITY_TAG, "onResume");
-
-            if (mScan_Text_Result != null && !mScan_Text_Result.isEmpty()) {
-                Log.i(LOGIN_ACTIVITY_TAG, "onResume: Scan Text Result = " + mScan_Text_Result);
-
-                String result[] = mScan_Text_Result.split(",");
-
-                Log.i(LOGIN_ACTIVITY_TAG, "onResume: username = " + result[0]);
-                Log.i(LOGIN_ACTIVITY_TAG, "onResume: email = " + result[1]);
-                String userCode = mScan_Text_Result;
-                String userEmail = result[1];
-                if (mUserDatabase == null) {
-                    mUserDatabase = new UserDatabase();
-                }
-                mUserDatabase.CheckIfUserExists(userCode, userEmail, this);
-
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        try {
+//            Log.i(LOGIN_ACTIVITY_TAG, "onResume");
+//
+//            if (mScan_Text_Result != null && !mScan_Text_Result.isEmpty()) {
+//
+//                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+//                    mProgressBarMoreThanAPI20.setVisibility(View.VISIBLE);
+//                    mProgressBarLessThanAPI21.setVisibility(View.GONE);
+//                } else {
+//                    mProgressBarMoreThanAPI20.setVisibility(View.GONE);
+//                    mProgressBarLessThanAPI21.setVisibility(View.VISIBLE);
+//                }
+//                Log.i(LOGIN_ACTIVITY_TAG, "onResume: Scan Text Result = " + mScan_Text_Result);
+//
+//                String result[] = mScan_Text_Result.split(",");
+//
+//                Log.i(LOGIN_ACTIVITY_TAG, "onResume: username = " + result[0]);
+//                Log.i(LOGIN_ACTIVITY_TAG, "onResume: email = " + result[1]);
+//                String phone = result[0];
+//                String email = result[1];
+//                if (mUserDatabase == null) {
+//                    mUserDatabase = new UserDatabase();
+//                }
+//                mUserDatabase.CheckIfUserExists(phone, email, this);
+//
+//                mScan_Text_Result = null;
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
         super.onResume();
     }
@@ -119,63 +124,38 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         switch (view.getId()) {
             case R.id.activity_login_loginButton:
                 try {
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                        mProgressBarMoreThanAPI20.setVisibility(View.VISIBLE);
+                        mProgressBarLessThanAPI21.setVisibility(View.GONE);
+                    } else {
+                        mProgressBarMoreThanAPI20.setVisibility(View.GONE);
+                        mProgressBarLessThanAPI21.setVisibility(View.VISIBLE);
+                    }
+
                     if (EmailEditText.getText().toString().isEmpty()) {
                         EmailEditText.setError(getResources().getString(R.string.required));
                     } else if (CodeEditText.getText().toString().isEmpty()) {
                         CodeEditText.setError(getResources().getString(R.string.required));
                     } else {
-                        CodeValue = CodeEditText.getText().toString();
-                        EmailValue = EmailEditText.getText().toString();
+                        mPhoneNumber = CodeEditText.getText().toString();
+                        mUsername = EmailEditText.getText().toString();
 
-                        if (!Patterns.EMAIL_ADDRESS.matcher(EmailValue).matches()) {
-                            EmailEditText.setError(getResources().getString(R.string.email_error));
-                        } else {
-                            mBackgroundHandler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    try {
-                                        mUserDatabase.CheckIfUserExists(CodeValue, EmailValue, LoginActivity.this);
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
+                        mBackgroundHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    mUserDatabase.CheckIfUserExists(mPhoneNumber, mUsername, LoginActivity.this);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
                                 }
-                            });
-                        }
+                            }
+                        });
+
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
                 break;
-            case R.id.activity_login_code_visibility:
-                try {
-                    if (CodeEditText.getTransformationMethod() == PasswordTransformationMethod.getInstance()) {
-                        CodeEditText.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-                        codeVisibility.setImageResource(R.drawable.ic_baseline_visibility_24px);
-                    } else {
-                        CodeEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
-                        codeVisibility.setImageResource(R.drawable.ic_baseline_visibility_off_24px);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                break;
-            case R.id.activity_login_scan_qr_code_button:
-                try {
-                    if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) ==
-                            PackageManager.PERMISSION_GRANTED) {
-
-                        Log.i(ON_CREATE_TAG, "CAMERA Permission is granted");
-
-                        //Calling ScannerActivity to Scan QR Code
-                        Intent intent = new Intent(new Intent(this, ScannerActivity.class));
-                        intent.putExtra("activity_type", "loginActivity");
-                        startActivity(intent);
-                    } else {
-                        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 1);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
         }
     }
 
@@ -213,7 +193,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     @Override
-    public void onLoginSuccess(final boolean state, final String type) {
+    public void onLoginSuccess(final boolean state, final String type,final String mUsername) {
         try {
             Log.i(LOGIN_ACTIVITY_TAG, "onLoginSuccess is called");
             if (mChangeUIHandler != null) {
@@ -221,14 +201,17 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 mChangeUIHandler.post(new Runnable() {
                     @Override
                     public void run() {
+                        mProgressBarMoreThanAPI20.setVisibility(View.GONE);
+                        mProgressBarLessThanAPI21.setVisibility(View.GONE);
+
                         if (state) {
-                            addUserIntoOfflineDatabase(type);
+                            addUserIntoOfflineDatabase(type,mUsername);
                             Log.i(LOGIN_ACTIVITY_TAG, "onLoginSuccess state is true and userType is " + type);
                             //update UI and navigate to Home Screen
                             updateUI(type);
                         } else {
                             Log.i(LOGIN_ACTIVITY_TAG, "onLoginSuccess state is false, Entered code not found");
-                            Toast.makeText(LoginActivity.this, "الكود غير صحيح", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LoginActivity.this, "اسم المستخدم او كلمة المرور غير صحيح", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -266,28 +249,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    private void addUserIntoOfflineDatabase(String type) {
+    private void addUserIntoOfflineDatabase(String type,String mUsername) {
         try {
             SharedPreferences mPreferences = getSharedPreferences(getString(R.string.shared_preferences_file_name), MODE_PRIVATE);
             SharedPreferences.Editor editor = mPreferences.edit();
+            editor.putString(getString(R.string.username),mUsername);
             editor.putString(getString(R.string.type_key), type);
             editor.apply();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void checkIfLoggedInBefore() {
-        try {
-            SharedPreferences sharedPref = getSharedPreferences(getString(R.string.shared_preferences_file_name), MODE_PRIVATE);
-            String type = sharedPref.getString(getString(R.string.type_key), getString(R.string.default_value_of_shared_preferences_string));
-
-            Log.i(LOGIN_ACTIVITY_TAG, "checkIfLoggedInBefore(): type is " + type);
-
-            if (!type.matches(getString(R.string.default_value_of_shared_preferences_string))) {
-                updateUI(type);
-            }
-
+            Log.i(LOGIN_ACTIVITY_TAG,"Current User is : "+mUsername);
         } catch (Exception e) {
             e.printStackTrace();
         }

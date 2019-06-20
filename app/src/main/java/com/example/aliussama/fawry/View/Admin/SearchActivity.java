@@ -1,4 +1,4 @@
-package com.example.aliussama.fawry.Admin;
+package com.example.aliussama.fawry.View.Admin;
 
 import android.Manifest;
 import android.app.SearchManager;
@@ -6,36 +6,39 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
-import android.support.annotation.NonNull;
-import android.support.constraint.ConstraintLayout;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.example.aliussama.fawry.LoginActivity;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.aliussama.fawry.View.LoginActivity;
 import com.example.aliussama.fawry.Model.Callbacks.ReadingAllDatabaseCallback;
 import com.example.aliussama.fawry.Model.Callbacks.SearchActivityCallback;
 import com.example.aliussama.fawry.Model.MachineModel;
 import com.example.aliussama.fawry.Model.UserDatabase;
 import com.example.aliussama.fawry.Model.UserModel;
 import com.example.aliussama.fawry.R;
-import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.ui.PlacePicker;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.model.PlaceLikelihood;
 
 import java.util.ArrayList;
 
@@ -47,12 +50,15 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
     //declare Place Pick Builder request code var
     private int PLACE_PICKER_REQUEST = 1;
 
+    private final String ADMIN = "ADMIN";
+
     String Query;
 
     Toolbar toolbar;
     SearchView searchView;
     SearchManager searchManager;
     EditText searchEditText;
+    ProgressBar mProgressBarMoreThanAPI20;
 
     HandlerThread mThread;
     Handler mBackgroundHandler;
@@ -97,6 +103,9 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
             toolbar = findViewById(R.id.activity_search_toolbar);
             setSupportActionBar(toolbar);
 
+            //Progress Bar
+            mProgressBarMoreThanAPI20 = findViewById(R.id.activity_search_determinateBar_moreThan_20);
+
             //Threads & Handlers
             mThread = new HandlerThread(HANDLER_THREAD_NAME);
             mThread.start();
@@ -114,13 +123,15 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
             mUsersRecyclerView.setLayoutManager(new LinearLayoutManager(this));
             mAllUsersRecAdapter = new AllUsersRecAdapter(users, this, this);
             mUsersRecyclerView.setAdapter(mAllUsersRecAdapter);
+            mUsersRecyclerView.setNestedScrollingEnabled(false);
 
             //Machines RecyclerView
             machines = new ArrayList<>();
             mMachinesRecyclerView = findViewById(R.id.activity_search_machines_recycler_view);
             mMachinesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-            mAllMachinesRecAdapter = new AllMachinesRecAdapter(machines, this);
+            mAllMachinesRecAdapter = new AllMachinesRecAdapter(machines, this, ADMIN);
             mMachinesRecyclerView.setAdapter(mAllMachinesRecAdapter);
+            mMachinesRecyclerView.setNestedScrollingEnabled(false);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -133,6 +144,9 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
         try {
             //reading all users and machines in database
             if (mBackgroundHandler != null) {
+
+                mProgressBarMoreThanAPI20.setVisibility(View.VISIBLE);
+
                 mBackgroundHandler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -164,7 +178,7 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
         searchView = (SearchView) menu.findItem(R.id.home_admin_search).getActionView();
 
         //change Search view EditText TextColor to white
-        searchEditText = searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
+        searchEditText = searchView.findViewById(androidx.appcompat.R.id.search_src_text);
         searchEditText.setTextColor(getResources().getColor(R.color.white));
         searchEditText.setHintTextColor(getResources().getColor(R.color.white));
 
@@ -214,7 +228,7 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
             if (query != null && !query.isEmpty()) {
                 ArrayList<UserModel> searchResult = new ArrayList<>();
                 for (UserModel user : users) {
-                    if (user.getName().toLowerCase().contains(query.toLowerCase()) || user.getEmail().toLowerCase().contains(query.toLowerCase())) {
+                    if (user.getName().toLowerCase().contains(query.toLowerCase()) || user.getPhone().toLowerCase().contains(query.toLowerCase())) {
                         searchResult.add(user);
                     }
                 }
@@ -235,7 +249,7 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
                 //Search in Users List
                 ArrayList<UserModel> usersSearchResult = new ArrayList<>();
                 for (UserModel user : users) {
-                    if (user.getName().toLowerCase().contains(newText.toLowerCase()) || user.getEmail().toLowerCase().contains(newText.toLowerCase())) {
+                    if (user.getName().toLowerCase().contains(newText.toLowerCase()) || user.getPhone().toLowerCase().contains(newText.toLowerCase())) {
                         usersSearchResult.add(user);
                     }
                 }
@@ -258,7 +272,8 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
                     if (machine.getmClientName().toLowerCase().contains(newText.toLowerCase()) ||
                             machine.getmMachineId().toLowerCase().contains(newText.toLowerCase()) ||
                             machine.getmClientPhone().toLowerCase().contains(newText.toLowerCase()) ||
-                            machine.getmAddress().toLowerCase().contains(newText.toLowerCase())) {
+                            machine.getmAddress().toLowerCase().contains(newText.toLowerCase()) ||
+                            machine.getmRepresentativeName().toLowerCase().contains(newText.toLowerCase())) {
                         machinesSearchResult.add(machine);
                     }
                 }
@@ -295,7 +310,7 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
 
                 if (resultCode == RESULT_OK) {
                     //getting picked place from the returned Intent
-                    Place place = PlacePicker.getPlace(data, this);
+//                    Place place = PlacePicker.getPlace(data, this);
                     int position = 0;
                     try {
                         SharedPreferences sharedPreferences = getSharedPreferences("AllMachinesRecAdapterPosition", Context.MODE_PRIVATE);
@@ -307,17 +322,17 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
                         e.printStackTrace();
                     }
                     //if place in not null
-                    if (place != null) {
-                        Log.i("SearchActivity", "onActivityResult : " + place.getAddress());
-                        //handle returned place
-                        Log.i("SearchActivity", "current view holder position = " + position);
-                        Log.i("SearchActivity", "current view holder machine ID = " + ((AllMachinesRecAdapter.viewHolder) mMachinesRecyclerView.findViewHolderForLayoutPosition(position)).machineID.getText().toString());
-
-                        mAllMachinesRecAdapter.onPlaceSelected(place, ((AllMachinesRecAdapter.viewHolder) mMachinesRecyclerView.findViewHolderForLayoutPosition(position)));
-                    } else {
-                        Log.i("SearchActivity", "onActivityResult : place is null");
-
-                    }
+//                    if (place != null) {
+//                        Log.i("SearchActivity", "onActivityResult : " + place.getAddress());
+//                        //handle returned place
+//                        Log.i("SearchActivity", "current view holder position = " + position);
+//                        Log.i("SearchActivity", "current view holder machine ID = " + ((AllMachinesRecAdapter.viewHolder) mMachinesRecyclerView.findViewHolderForLayoutPosition(position)).machineID.getText().toString());
+//
+//                        mAllMachinesRecAdapter.onPlaceSelected(place, ((AllMachinesRecAdapter.viewHolder) mMachinesRecyclerView.findViewHolderForLayoutPosition(position)));
+//                    } else {
+//                        Log.i("SearchActivity", "onActivityResult : place is null");
+//
+//                    }
                 }
             }
         } catch (Exception e) {
@@ -337,8 +352,7 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
         }
     }
 
-    //----------------------------------------------------------------------------------------------
-    //Callbacks
+    //---------------------------------Callbacks---------------------------------------------------
     @Override
     public void onAllUsersSuccess(final ArrayList<UserModel> mUsers) {
         try {
@@ -348,11 +362,15 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
                     public void run() {
                         try {
                             Log.i("onAllUsersSuccess", "Assigning mUsers to users");
+
+                            mProgressBarMoreThanAPI20.setVisibility(View.GONE);
+
+
                             users = mUsers;
                             if (Query != null && !Query.isEmpty()) {
                                 ArrayList<UserModel> searchResult = new ArrayList<>();
                                 for (UserModel user : users) {
-                                    if (user.getName().contains(Query) || user.getEmail().contains(Query)) {
+                                    if (user.getId().toLowerCase().contains(Query.toLowerCase()) || user.getPhone().contains(Query)) {
                                         searchResult.add(user);
                                     }
                                 }
@@ -379,6 +397,9 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
 
     @Override
     public void onAllUsersFailure(Exception e) {
+
+        mProgressBarMoreThanAPI20.setVisibility(View.GONE);
+
         e.printStackTrace();
     }
 
@@ -394,6 +415,9 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
                     public void run() {
                         try {
                             Log.i("onAllUsersSuccess", "Assigning mUsers to users");
+
+                            mProgressBarMoreThanAPI20.setVisibility(View.GONE);
+
                             //Assigning machines returned from database
                             //to the machines adapter list
                             machines = mMachines;
@@ -406,10 +430,13 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
                                 for (MachineModel machine : machines) {
                                     //check if current machine item contains
                                     //current query
+                                    Log.i(TAG,machine.getmUID());
+                                    Log.i(TAG,machine.getmClientName());
+
                                     if (machine.getmClientName().toLowerCase().contains(Query.toLowerCase()) ||
                                             machine.getmMachineId().toLowerCase().contains(Query.toLowerCase()) ||
                                             machine.getmClientPhone().toLowerCase().contains(Query.toLowerCase()) ||
-                                            machine.getmAddress().toLowerCase().contains(Query.toLowerCase())) {
+                                            machine.getmAddress().toLowerCase().contains(Query.toLowerCase()) ) {
                                         //If so, add current machine to search result list
                                         searchResult.add(machine);
                                     }
@@ -441,6 +468,9 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
 
     @Override
     public void onAllMachinesFailure(String message) {
+
+        mProgressBarMoreThanAPI20.setVisibility(View.GONE);
+
         Log.i("SearchActivity", "" + message);
     }
 

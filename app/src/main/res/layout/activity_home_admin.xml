@@ -4,15 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Admin.HomeAdminActivity">
+    tools:context=".View.Admin.HomeAdminActivity">
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="32dp"
         android:textDirection="rtl">
 
-        <android.support.design.widget.AppBarLayout
+        <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/activity_home_admin_app_bar_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -21,7 +21,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <android.support.v7.widget.Toolbar
+            <androidx.appcompat.widget.Toolbar
                 android:id="@+id/activity_home_admin_toolbar"
                 style="@style/HomeAdminToolbar"
                 android:layout_width="match_parent"
@@ -31,51 +31,66 @@
                 app:title="@string/home_page"
                 app:titleTextColor="@color/white">
 
-            </android.support.v7.widget.Toolbar>
-        </android.support.design.widget.AppBarLayout>
+            </androidx.appcompat.widget.Toolbar>
+        </com.google.android.material.appbar.AppBarLayout>
 
-        <android.support.constraint.ConstraintLayout
+        <ProgressBar
+            android:id="@+id/activity_home_admin_determinateBar_moreThan_20"
+            style="@android:style/Widget.Material.ProgressBar.Horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
+            android:indeterminate="true"
+            android:indeterminateBehavior="repeat"
+            android:indeterminateDuration="50"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/activity_home_admin_app_bar_layout"
+            tools:targetApi="lollipop" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="200dp"
+            android:layout_marginEnd="16dp"
+
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/activity_home_admin_app_bar_layout">
+            app:layout_constraintTop_toBottomOf="@id/activity_home_admin_determinateBar_moreThan_20">
 
-            <TextView
-                android:id="@+id/activity_home_admin_code_text_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/representative_code"
-                android:textSize="17sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+            <!--<TextView-->
+            <!--android:id="@+id/activity_home_admin_code_text_view"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:gravity="center"-->
+            <!--android:text="@string/representative_code"-->
+            <!--android:textSize="17sp"-->
+            <!--android:textStyle="bold"-->
+            <!--app:layout_constraintEnd_toEndOf="parent"-->
+            <!--app:layout_constraintStart_toStartOf="parent"-->
+            <!--app:layout_constraintTop_toTopOf="parent" />-->
 
-            <ImageView
-                android:id="@+id/activity_home_admin_generated_code_image_view"
-                android:contentDescription="@string/representative_code"
-                android:layout_width="200dp"
-                android:layout_height="200dp"
-                android:src="@color/grey_light"
-                android:layout_marginTop="8dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/activity_home_admin_code_text_view" />
+            <!--<ImageView-->
+            <!--android:id="@+id/activity_home_admin_generated_code_image_view"-->
+            <!--android:layout_width="200dp"-->
+            <!--android:layout_height="200dp"-->
+            <!--android:layout_marginTop="8dp"-->
+            <!--android:contentDescription="@string/representative_code"-->
+            <!--android:src="@color/grey_light"-->
+            <!--app:layout_constraintEnd_toEndOf="parent"-->
+            <!--app:layout_constraintStart_toStartOf="parent"-->
+            <!--app:layout_constraintTop_toBottomOf="@id/activity_home_admin_code_text_view" />-->
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/activity_home_admin_user_name_input_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/activity_home_admin_generated_code_image_view">
+                app:layout_constraintTop_toTopOf="parent">
 
                 <EditText
                     android:id="@+id/activity_home_admin_user_name_edit_text"
@@ -84,9 +99,9 @@
                     android:hint="@string/enter_username"
                     android:inputType="textPersonName"
                     android:textSize="14sp" />
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/activity_home_admin_user_email_input_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -96,55 +111,33 @@
                 app:layout_constraintTop_toBottomOf="@id/activity_home_admin_user_name_input_layout">
 
                 <EditText
-                    android:id="@+id/activity_home_admin_user_email_edit_text"
+                    android:id="@+id/activity_home_admin_user_phone_edit_text"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:hint="@string/enter_user_email"
-                    android:inputType="textEmailAddress"
+                    android:hint="@string/enter_user_phone"
+                    android:inputType="phone|numberPassword"
                     android:textSize="14sp" />
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/activity_home_admin_generate_code_fab_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="onAddUserClickListener"
-                android:src="@drawable/ic_add_black_24dp"
-                app:fabSize="mini"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/activity_home_admin_user_email_input_layout" />
-
-            <TextView
-                android:id="@+id/activity_home_admin_generate_code_text_view"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginTop="32dp"
-                android:gravity="center_vertical"
-                android:text="@string/generate_new_code"
-                android:textSize="14sp"
-                app:layout_constraintEnd_toStartOf="@+id/activity_home_admin_generate_code_fab_button"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/activity_home_admin_user_email_input_layout" />
 
             <Button
                 android:id="@+id/activity_home_admin_add_user_button"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginBottom="16dp"
                 android:layout_marginTop="32dp"
-                android:background="@color/colorPrimaryDark"
+                android:layout_marginBottom="16dp"
+                android:background="@color/colorPrimary"
                 android:onClick="onAddUserClickListener"
                 android:text="@string/add_user"
                 android:textAllCaps="false"
-                android:textColor="@color/colorAccent"
+                android:textColor="@color/white"
                 android:textSize="17sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/activity_home_admin_generate_code_fab_button" />
+                app:layout_constraintTop_toBottomOf="@+id/activity_home_admin_user_email_input_layout" />
 
-        </android.support.constraint.ConstraintLayout>
-    </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

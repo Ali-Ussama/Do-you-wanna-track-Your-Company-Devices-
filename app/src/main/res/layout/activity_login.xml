@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LoginActivity">
+    tools:context=".View.LoginActivity">
 
-    <android.support.design.widget.AppBarLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/activity_login_app_bar_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -15,7 +16,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <android.support.v7.widget.Toolbar
+        <androidx.appcompat.widget.Toolbar
             android:id="@+id/activity_login_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
@@ -23,71 +24,88 @@
             app:titleTextColor="@color/white"
             style="@style/Base.ThemeOverlay.AppCompat.ActionBar">
 
-        </android.support.v7.widget.Toolbar>
-    </android.support.design.widget.AppBarLayout>
+        </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.AppBarLayout>
 
+    <ProgressBar
+        android:id="@+id/activity_login_determinateBar_moreThan_20"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:indeterminateBehavior="repeat"
+        android:indeterminateDuration="50"
+        app:layout_constraintTop_toBottomOf="@id/activity_login_app_bar_layout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        style="@android:style/Widget.Material.ProgressBar.Horizontal"
+        tools:targetApi="lollipop"
+        android:visibility="gone"/>
 
-    <android.support.constraint.ConstraintLayout
+    <ProgressBar
+        android:id="@+id/activity_login_determinateBar_lessThan_21"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/CircularProgress"
+        style="@style/Widget.AppCompat.ProgressBar"
+        android:indeterminate="true"
+        app:layout_constraintTop_toBottomOf="@id/activity_login_app_bar_layout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:visibility="gone"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        app:layout_constraintTop_toBottomOf="@id/activity_login_app_bar_layout"
+        app:layout_constraintTop_toBottomOf="@id/activity_login_determinateBar_moreThan_20"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/activity_login_email_input_layout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:layoutDirection="ltr"
+            android:layoutDirection="rtl"
             android:textDirection="ltr"
             app:layout_constraintBottom_toTopOf="@+id/activity_login_code_input_layout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
 
-            <EditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/activity_login_EmailEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/enter_your_email"
+                android:hint="@string/enter_username"
                 android:inputType="textEmailAddress"
                 android:textSize="14sp" />
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/activity_login_code_input_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:layoutDirection="ltr"
+            android:layoutDirection="rtl"
             android:textDirection="ltr"
+            app:passwordToggleEnabled="true"
             app:layout_constraintBottom_toTopOf="@+id/activity_login_loginButton"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
 
-                <EditText
-                    android:id="@+id/activity_login_CodeEditText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/enter_your_code"
-                    android:inputType="textPassword"
-                    android:textSize="14sp" />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/activity_login_CodeEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textDirection="ltr"
+                android:hint="@string/enter_your_code"
+                android:inputType="numberPassword"
+                android:textSize="14sp" />
 
-        </android.support.design.widget.TextInputLayout>
-
-        <ImageView
-            android:id="@+id/activity_login_code_visibility"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_baseline_visibility_off_24px"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            app:layout_constraintBottom_toBottomOf="@id/activity_login_code_input_layout"
-            app:layout_constraintEnd_toEndOf="@id/activity_login_code_input_layout"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <Button
             android:id="@+id/activity_login_loginButton"
@@ -98,25 +116,11 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:text="@string/login"
-            android:textColor="@color/colorAccent"
-            android:textStyle="bold"
-            android:layoutDirection="rtl"
-            android:background="@color/colorPrimaryDark"/>
-
-        <Button
-            android:id="@+id/activity_login_scan_qr_code_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layoutDirection="rtl"
-            app:layout_constraintTop_toBottomOf="@id/activity_login_loginButton"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:text="@string/scan_qr_code"
-            android:textColor="@color/colorAccent"
+            android:textColor="@color/white"
             android:textStyle="bold"
             android:background="@color/colorPrimary"/>
 
-    </android.support.constraint.ConstraintLayout>
 
-</android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

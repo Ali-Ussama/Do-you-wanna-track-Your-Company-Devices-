@@ -1,7 +1,8 @@
 package com.example.aliussama.fawry.Model;
 
-import android.support.annotation.NonNull;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import com.example.aliussama.fawry.Model.Callbacks.OnAddMachineListener;
 import com.example.aliussama.fawry.Model.Callbacks.ReadingAllDatabaseCallback;
@@ -19,6 +20,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Created by ali Ussama on 7/6/2018.
@@ -31,9 +33,10 @@ public class UserDatabase {
     private final String UPDATE_USER_TAG = "updateUser";
 
 
-    public void CheckIfUserExists(final String userCode, final String email, final UserDatabaseCallback callback) {
+    public void CheckIfUserExists(final String phone, final String email, final UserDatabaseCallback callback) {
 
         final String TAG = "CheckIfUserExists";
+
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
         Log.i(TAG, "Firebase reference is initialized");
 
@@ -48,30 +51,31 @@ public class UserDatabase {
                     Log.i(TAG, "Declaring var to check found code");
                     boolean founded = false;
                     if (codes != null) {
-
+                        Log.i(TAG, "username: " + email + " password: " + phone);
                         Log.i(TAG, "returned codes are not null");
-                        for (String code : codes.keySet()) {
-                            String mEmail = codes.get(code).get("email").toLowerCase();
-                            String id = codes.get(code).get("id").toLowerCase();
-                            String type = codes.get(code).get("type").toLowerCase();
 
-                            Log.i(TAG, "current Code is : " + id);
-                            if (mEmail.matches(email) && id.matches(userCode)) {
-                                Log.i(TAG, "User Code is found in Firebase database");
-                                founded = true;
-                                Log.i(TAG, "Sending callback with true value");
-                                if (type.matches("admin")) {
-                                    callback.onLoginSuccess(true, "admin");
-                                } else if (type.matches("user")) {
-                                    callback.onLoginSuccess(true, "user");
+                        for (String code : codes.keySet()) {
+                                String mPhone = Objects.requireNonNull(Objects.requireNonNull(codes.get(code)).get("phone")).toLowerCase();
+                                String id = Objects.requireNonNull(Objects.requireNonNull(codes.get(code)).get("id")).toLowerCase();
+                                String type = Objects.requireNonNull(Objects.requireNonNull(codes.get(code)).get("type")).toLowerCase();
+
+                                Log.i(TAG, "current username is : " + id + "\n phone : " + mPhone);
+                                if (mPhone.matches(phone.toLowerCase()) && id.matches(email.toLowerCase())) {
+                                    Log.i(TAG, "User Code is found in Firebase database");
+                                    founded = true;
+                                    Log.i(TAG, "Sending callback with true value");
+                                    if (type.matches("admin")) {
+                                        callback.onLoginSuccess(true, "admin",email);
+                                    } else if (type.matches("user")) {
+                                        callback.onLoginSuccess(true, "user",email);
+                                    }
+                                    break;
                                 }
-                                break;
-                            }
 
                         }
                         if (!founded) {
                             Log.i(TAG, "User Code is not found in Firebase database");
-                            callback.onLoginSuccess(false, null);
+                            callback.onLoginSuccess(false, null,null);
                         }
                     }
                 } catch (Exception e) {
@@ -139,7 +143,7 @@ public class UserDatabase {
                             for (String key : result.keySet()) {
                                 Log.i(GET_ALL_USERS_TAG, "user = " + result.get(key).get("name"));
                                 users.add(new UserModel(key, result.get(key).get("id"), result.get(key).get("name"),
-                                        result.get(key).get("email"), result.get(key).get("type")));
+                                        result.get(key).get("phone"), result.get(key).get("type")));
                             }
 
                             if (callback != null) {
@@ -237,7 +241,8 @@ public class UserDatabase {
                                         machinesResult.get(key).get("mClientPhone"),
                                         machinesResult.get(key).get("mAddress"),
                                         machinesResult.get(key).get("mLatitude"),
-                                        machinesResult.get(key).get("mLongitude")));
+                                        machinesResult.get(key).get("mLongitude"),
+                                        machinesResult.get(key).get("mRepresentativeName")));
                             }
 
                             if (callback != null)

@@ -11,20 +11,20 @@ public class UserModel implements Serializable {
     private String userKey;
     private String id;
     private String name;
-    private String email;
+    private String phone;
     private String type;
 
-    public UserModel(String id, String name, String email, String type) {
+    public UserModel(String id, String name, String phone, String type) {
         this.id = id;
         this.name = name;
-        this.email = email;
+        this.phone = phone;
         this.type = type;
     }
-    public UserModel(String userKey,String id, String name, String email, String type) {
+    public UserModel(String userKey, String id, String name, String phone, String type) {
         this.userKey = userKey;
         this.id = id;
         this.name = name;
-        this.email = email;
+        this.phone = phone;
         this.type = type;
     }
 
@@ -52,12 +52,12 @@ public class UserModel implements Serializable {
         this.name = name;
     }
 
-    public String getEmail() {
-        return email;
+    public String getPhone() {
+        return phone;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     public String getType() {
