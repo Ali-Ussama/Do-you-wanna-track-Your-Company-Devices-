@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -35,6 +36,7 @@ import com.example.aliussama.fawry.Model.UserDatabase;
 import com.example.aliussama.fawry.Model.UserModel;
 import com.example.aliussama.fawry.R;
 import com.example.aliussama.fawry.View.Admin.AllMachinesRecAdapter;
+import com.example.aliussama.fawry.View.Admin.SearchActivity;
 import com.example.aliussama.fawry.View.LoginActivity;
 //import com.google.android.gms.location.places.Place;
 //import com.google.android.gms.location.places.ui.PlacePicker;
@@ -73,6 +75,7 @@ public class UserSearchActivity extends AppCompatActivity implements SearchView.
 
     ConstraintLayout machinesLayout;
 
+    String currentUsername;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,6 +101,10 @@ public class UserSearchActivity extends AppCompatActivity implements SearchView.
 
 
             }
+
+            //initialize current username
+            currentUsername = getUsername();
+
             //toolbar
             toolbar = findViewById(R.id.activity_search_toolbar);
             setSupportActionBar(toolbar);
@@ -119,7 +126,7 @@ public class UserSearchActivity extends AppCompatActivity implements SearchView.
             machines = new ArrayList<>();
             mMachinesRecyclerView = findViewById(R.id.activity_search_machines_recycler_view);
             mMachinesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-            mAllMachinesRecAdapter = new AllMachinesRecAdapter(machines, this, USER);
+            mAllMachinesRecAdapter = new AllMachinesRecAdapter(machines, UserSearchActivity.this, USER);
             mMachinesRecyclerView.setAdapter(mAllMachinesRecAdapter);
 
         } catch (Exception e) {
@@ -136,16 +143,13 @@ public class UserSearchActivity extends AppCompatActivity implements SearchView.
 
                 mProgressBarMoreThanAPI20.setVisibility(View.VISIBLE);
 
-                mBackgroundHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            if (mUserDatabase != null) {
-                                mUserDatabase.getAllMachines(UserSearchActivity.this);
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
+                mBackgroundHandler.post(() -> {
+                    try {
+                        if (mUserDatabase != null) {
+                            mUserDatabase.getAllMachines(UserSearchActivity.this);
                         }
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 });
             }
@@ -347,51 +351,48 @@ public class UserSearchActivity extends AppCompatActivity implements SearchView.
             if (machines != null) {
                 //posting runnable on MainThread Handler
                 // to change UI Machines RecyclerView
-                mChangeUIHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            Log.i("onAllUsersSuccess", "Assigning mUsers to users");
+                mChangeUIHandler.post(() -> {
+                    try {
+                        Log.i("onAllUsersSuccess", "Assigning mUsers to users");
 
-                            mProgressBarMoreThanAPI20.setVisibility(View.GONE);
+                        mProgressBarMoreThanAPI20.setVisibility(View.GONE);
 
-                            //Assigning machines returned from database
-                            //to the machines adapter list
-                            machines = mMachines;
-                            //handle if there is query
-                            if (Query != null && !Query.isEmpty()) {
-                                //declaring arrayList of machineModel
-                                //to hold search result
-                                ArrayList<MachineModel> searchResult = new ArrayList<>();
-                                //looping over machines to search for the query
-                                for (MachineModel machine : machines) {
-                                    //check if current machine item contains
-                                    //current query
-                                    if (machine.getmClientName().toLowerCase().contains(Query.toLowerCase()) ||
-                                            machine.getmMachineId().toLowerCase().contains(Query.toLowerCase()) ||
-                                            machine.getmClientPhone().toLowerCase().contains(Query.toLowerCase()) ||
-                                            machine.getmAddress().toLowerCase().contains(Query.toLowerCase())) {
-                                        //If so, add current machine to search result list
-                                        searchResult.add(machine);
-                                    }
-                                }
-                                // if search result list contains any result
-                                if (searchResult.size() > 0) {
-                                    //set machines layout's visibility VISIBLE
-                                    machinesLayout.setVisibility(View.VISIBLE);
-                                    //Notify machines recyclerView Adapter with search result list
-                                    mAllMachinesRecAdapter.NotifyAdapter(searchResult);
-                                    Log.i("onAllMachinesSuccess", "Machines Adapter has been notified");
-                                } else {
-                                    //set machines layout's visibility GONE
-                                    machinesLayout.setVisibility(View.GONE);
-                                    Log.i("onAllMachinesSuccess", "No machines matches the search query");
-
+                        //Assigning machines returned from database
+                        //to the machines adapter list
+                        machines = mMachines;
+                        //handle if there is query
+                        if (Query != null && !Query.isEmpty()) {
+                            //declaring arrayList of machineModel
+                            //to hold search result
+                            ArrayList<MachineModel> searchResult = new ArrayList<>();
+                            //looping over machines to search for the query
+                            for (MachineModel machine : machines) {
+                                //check if current machine item contains
+                                //current query
+                                if ((machine.getmClientName().toLowerCase().contains(Query.toLowerCase()) ||
+                                        machine.getmMachineId().toLowerCase().contains(Query.toLowerCase()) ||
+                                        machine.getmClientPhone().toLowerCase().contains(Query.toLowerCase()) ||
+                                        machine.getmAddress().toLowerCase().contains(Query.toLowerCase())) && machine.getmRepresentativeName().toLowerCase().matches(currentUsername)) {
+                                    //If so, add current machine to search result list
+                                    searchResult.add(machine);
                                 }
                             }
-                        } catch (Exception e) {
-                            e.printStackTrace();
+                            // if search result list contains any result
+                            if (searchResult.size() > 0) {
+                                //set machines layout's visibility VISIBLE
+                                machinesLayout.setVisibility(View.VISIBLE);
+                                //Notify machines recyclerView Adapter with search result list
+                                mAllMachinesRecAdapter.NotifyAdapter(searchResult);
+                                Log.i("onAllMachinesSuccess", "Machines Adapter has been notified");
+                            } else {
+                                //set machines layout's visibility GONE
+                                machinesLayout.setVisibility(View.GONE);
+                                Log.i("onAllMachinesSuccess", "No machines matches the search query");
+
+                            }
                         }
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 });
             }
@@ -419,8 +420,34 @@ public class UserSearchActivity extends AppCompatActivity implements SearchView.
     }
 
     @Override
-    public void onMachineItemDelete(MachineModel machine) {
+    public void onMachineItemDelete(final MachineModel machine) {
+        try {
+            Log.i(TAG,"onMachineItemDelete() is called");
+            if (mThread == null || mBackgroundHandler == null) {
+                Log.i(TAG,"onMachineItemDelete(): initializing Thread");
 
+                mThread = new HandlerThread(HANDLER_THREAD_NAME);
+                mBackgroundHandler = new Handler(mThread.getLooper());
+            }
+            if (mUserDatabase == null) {
+                Log.i(TAG,"onMachineItemDelete(): intializing userDatabase Object");
+                mUserDatabase = new UserDatabase();
+            }
+            mBackgroundHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Log.i(TAG,"onMachineItemDelete(): calling deleteMachine in a background thread with machineUID = "+ machine.getmUID());
+
+                        mUserDatabase.deleteMachine(machine, UserSearchActivity.this);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -429,8 +456,23 @@ public class UserSearchActivity extends AppCompatActivity implements SearchView.
     }
 
     @Override
-    public void onMachineDeletedSuccess(boolean status) {
-
+    public void onMachineDeletedSuccess(final boolean status) {
+        try {
+            if (mChangeUIHandler == null)
+                mChangeUIHandler = new Handler(Looper.getMainLooper());
+            mChangeUIHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (status) {
+                        Toast.makeText(UserSearchActivity.this, getString(R.string.machine_deleted_successfully), Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(UserSearchActivity.this, getString(R.string.error_message_to_user), Toast.LENGTH_LONG).show();
+                    }
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -448,5 +490,17 @@ public class UserSearchActivity extends AppCompatActivity implements SearchView.
 
     }
 
+    private String getUsername(){
+        SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.shared_preferences_file_name),MODE_PRIVATE);
+        String username = "none";
+        try {
+            username = sharedPreferences.getString(getString(R.string.username), "none");
+            Log.i(TAG,"Current User is : "+username);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return username;
+    }
 
 }

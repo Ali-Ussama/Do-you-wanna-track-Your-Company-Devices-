@@ -346,16 +346,23 @@ public class UserDatabase {
 
     public void deleteMachine(MachineModel machine, final SearchActivityCallback callback) {
         try {
+            Log.i("UserDatabase","DeleteMachine() is called");
             DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
             reference.child("machines").child(machine.getmUID()).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
+                    Log.i("UserDatabase","DeleteMachine(): addOnCompleteListener is called");
+
                     if (task.isSuccessful() && task.isComplete()) {
+                        Log.i("UserDatabase","DeleteMachine(): machine is deleted successfully");
                         if (callback != null) {
+                            Log.i("UserDatabase","DeleteMachine(): sending callback to onMachineDeletedSuccess(true)");
                             callback.onMachineDeletedSuccess(true);
                         }
                     } else {
+                        Log.i("UserDatabase","DeleteMachine(): task isn't successful or isn't completed");
                         if (callback != null) {
+                            Log.i("UserDatabase","DeleteMachine(): sending callback to onMachineDeletedSuccess(false)");
                             callback.onMachineDeletedSuccess(false);
                         }
                     }
@@ -363,7 +370,10 @@ public class UserDatabase {
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
+                    Log.i("UserDatabase","DeleteMachine(): addOnFailureListener is called");
+
                     if (callback != null) {
+                        Log.i("UserDatabase","DeleteMachine(): passing the exception SearchActivity via onMachineDeleteFailure() callback");
                         callback.onMachineDeleteFailure(e);
                     }
                 }

@@ -85,37 +85,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     //TODO REMOVE
     @Override
     protected void onResume() {
-//        try {
-//            Log.i(LOGIN_ACTIVITY_TAG, "onResume");
-//
-//            if (mScan_Text_Result != null && !mScan_Text_Result.isEmpty()) {
-//
-//                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-//                    mProgressBarMoreThanAPI20.setVisibility(View.VISIBLE);
-//                    mProgressBarLessThanAPI21.setVisibility(View.GONE);
-//                } else {
-//                    mProgressBarMoreThanAPI20.setVisibility(View.GONE);
-//                    mProgressBarLessThanAPI21.setVisibility(View.VISIBLE);
-//                }
-//                Log.i(LOGIN_ACTIVITY_TAG, "onResume: Scan Text Result = " + mScan_Text_Result);
-//
-//                String result[] = mScan_Text_Result.split(",");
-//
-//                Log.i(LOGIN_ACTIVITY_TAG, "onResume: username = " + result[0]);
-//                Log.i(LOGIN_ACTIVITY_TAG, "onResume: email = " + result[1]);
-//                String phone = result[0];
-//                String email = result[1];
-//                if (mUserDatabase == null) {
-//                    mUserDatabase = new UserDatabase();
-//                }
-//                mUserDatabase.CheckIfUserExists(phone, email, this);
-//
-//                mScan_Text_Result = null;
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-
         super.onResume();
     }
 

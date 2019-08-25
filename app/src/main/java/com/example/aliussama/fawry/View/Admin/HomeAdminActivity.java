@@ -97,7 +97,16 @@ public class HomeAdminActivity extends AppCompatActivity implements UserDatabase
 
             mUserDatabase = new UserDatabase();
 
+            initLoadingDialog();
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void initLoadingDialog() {
+        try{
+
+        }catch (Exception e){
             e.printStackTrace();
         }
     }

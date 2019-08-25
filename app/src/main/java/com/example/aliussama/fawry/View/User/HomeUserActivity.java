@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,32 +29,22 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.example.aliussama.fawry.View.Admin.SearchActivity;
-import com.example.aliussama.fawry.View.LoginActivity;
 import com.example.aliussama.fawry.Model.Callbacks.OnAddMachineListener;
 import com.example.aliussama.fawry.Model.GPSTracker;
 import com.example.aliussama.fawry.Model.MachineModel;
 import com.example.aliussama.fawry.Model.UserDatabase;
 import com.example.aliussama.fawry.R;
+import com.example.aliussama.fawry.View.LoginActivity;
 import com.example.aliussama.fawry.View.ScannerActivity;
-
-
-import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.api.model.PlaceLikelihood;
-import com.google.android.libraries.places.api.net.FetchPlaceRequest;
-import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
-import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.util.Arrays;
-import java.util.List;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
@@ -64,23 +55,26 @@ public class HomeUserActivity extends AppCompatActivity implements View.OnClickL
     final String HOME_USER_TAG = "HomeUserActivity";
     Toolbar toolbar;
 
+    @BindView(R.id.activity_home_user_determinateBar_moreThan_20)
+    ProgressBar mProgressBarMoreThanAPI20;
+
+    @BindView(R.id.activity_home_user_determinateBar_lessThan_21)
+    ProgressBar mProgressBarLessThanAPI21;
+
     public static EditText machineCodeEditText;
     EditText clientNameEditText, clientPhoneEditText;
     EditText currentAddressEditText;
     FloatingActionButton addLocationFab, mScanMachineSerialNumberFab;
     Button addMachineButton;
 
-    TextView mCurrentAddressTextView;
     String mCurrentAddressName;
     public static String mMachineId;
 
     //declare current location var
     private Location mCurrentLocation;
 
-    public int mCurrentItemPosition;
-
     //declare Place Pick Builder request code var
-    private int PLACE_PICKER_REQUEST = 1;
+    private final int PLACE_PICKER_REQUEST = 1;
 
     //declare Place Pick Builder reference
 //    private Place .IntentBuilder builder;
@@ -99,16 +93,11 @@ public class HomeUserActivity extends AppCompatActivity implements View.OnClickL
 
     private MachineModel mMachine;
 
-    private SearchView searchView;
-
-    private SearchManager searchManager;
-
-    private EditText searchEditText;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_user);
+        ButterKnife.bind(this);
 
         init();
     }
@@ -204,11 +193,11 @@ public class HomeUserActivity extends AppCompatActivity implements View.OnClickL
 
         // Get the SearchView and set the searchable configuration
         //declare Search Manager
-        searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         //Declare Search View and associate it to it's icon in menu in toolbar
-        searchView = (SearchView) menu.findItem(R.id.home_user_search).getActionView();
+        SearchView searchView = (SearchView) menu.findItem(R.id.home_user_search).getActionView();
         //change Search view EditText TextColor to white
-        searchEditText = searchView.findViewById(androidx.appcompat.R.id.search_src_text);
+        EditText searchEditText = searchView.findViewById(androidx.appcompat.R.id.search_src_text);
         searchEditText.setTextColor(getResources().getColor(R.color.white));
         searchEditText.setHintTextColor(getResources().getColor(R.color.white));
 
@@ -236,6 +225,28 @@ public class HomeUserActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
+    private void showLoading() {
+        try{
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                mProgressBarMoreThanAPI20.setVisibility(View.VISIBLE);
+                mProgressBarLessThanAPI21.setVisibility(View.GONE);
+            } else {
+                mProgressBarMoreThanAPI20.setVisibility(View.GONE);
+                mProgressBarLessThanAPI21.setVisibility(View.VISIBLE);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private void stopLoading(){
+        try{
+            mProgressBarMoreThanAPI20.setVisibility(View.GONE);
+            mProgressBarLessThanAPI21.setVisibility(View.GONE);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == 1) {
@@ -262,10 +273,10 @@ public class HomeUserActivity extends AppCompatActivity implements View.OnClickL
     private void addCurrentLocationOnClick() {
         try {
 
-            Log.i(HOME_USER_TAG, "ACCESS_FINE_LOCATION permission granted");
+            Log.i(HOME_USER_TAG, "addCurrentLocationOnClick(): ACCESS_FINE_LOCATION permission granted");
             //starting Place Picker Builder
             if (mGpsTracker.canGetLocation()) {
-                Log.i(HOME_USER_TAG, "GPSTracker is enabled");
+                Log.i(HOME_USER_TAG, "addCurrentLocationOnClick(): GPSTracker is enabled");
                 mGpsTracker.getLocation();
                 LatLng currentLocationLatLng = new LatLng(mGpsTracker.getLatitude(), mGpsTracker.getLongitude());
                 Log.i(HOME_USER_TAG, "current location Latitude = " + currentLocationLatLng.latitude);
@@ -276,53 +287,7 @@ public class HomeUserActivity extends AppCompatActivity implements View.OnClickL
                 mCurrentLocation.setLatitude(currentLocationLatLng.latitude);
                 mCurrentLocation.setLongitude(currentLocationLatLng.longitude);
                 mCurrentAddressName = "none";
-//                // Use fields to define the data types to return.
-//                List<Place.Field> placeFields = Arrays.asList(Place.Field.LAT_LNG,Place.Field.ADDRESS,Place.Field.NAME,Place.Field.ADDRESS_COMPONENTS);
-//
-//                // Use the builder to create a FindCurrentPlaceRequest.
-//                FindCurrentPlaceRequest request =
-//                        FindCurrentPlaceRequest.builder(placeFields).build();
-//
-//                // Call findCurrentPlace and handle the response (first check that the user has granted permission).
-//                if (ContextCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-//                    placesClient.findCurrentPlace(request).addOnSuccessListener(new OnSuccessListener<FindCurrentPlaceResponse>() {
-//                        @Override
-//                        public void onSuccess(FindCurrentPlaceResponse response) {
-//                            for (PlaceLikelihood placeLikelihood : response.getPlaceLikelihoods()) {
-//                                Log.i(HOME_USER_TAG, String.format("Place '%s' has likelihood: %f",
-//                                        placeLikelihood.getPlace().getName(),
-//                                        placeLikelihood.getLikelihood()));
-//                                Place place = placeLikelihood.getPlace();
-//                                onPlaceSelected(place);
-//
-//                            }
-//                        }
-//                    }).addOnFailureListener(new OnFailureListener() {
-//                        @Override
-//                        public void onFailure(@androidx.annotation.NonNull Exception e) {
-//                            if (e instanceof ApiException) {
-//                                ApiException apiException = (ApiException) e;
-//                                Log.e(HOME_USER_TAG, "Place not found: " + apiException.getStatusCode());
-//                            }
-//                        }
-//                    });
-//                } else {
-//                    // A local method to request required permissions;
-//                    // See https://developer.android.com/training/permissions/requesting
-//                    if (ContextCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) !=
-//                            PackageManager.PERMISSION_GRANTED &&
-//                            ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) !=
-//                                    PackageManager.PERMISSION_GRANTED) {
-//                        ActivityCompat.requestPermissions(this,
-//                                new String[]{ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
-//
-//                    }
-                }
-//
-//            } else {
-//                Log.i(HOME_USER_TAG, "GPS Tracking is Not Enabled");
-//                mGpsTracker.showSettingsAlert();
-//            }
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -345,6 +310,7 @@ public class HomeUserActivity extends AppCompatActivity implements View.OnClickL
             } else if(currentAddressEditText.getText() == null || currentAddressEditText.getText().toString().isEmpty()){
                 currentAddressEditText.setError("مطلوب");
             }else {
+                showLoading();
                 mMachineId = machineCodeEditText.getText().toString();
                 String clientName = clientNameEditText.getText().toString();
                 String clientPhone = clientPhoneEditText.getText().toString();
@@ -360,14 +326,11 @@ public class HomeUserActivity extends AppCompatActivity implements View.OnClickL
                         currentLocationLongitude,
                         getUsername());
 
-                mBackgroundHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            mUserDatabase.checkIfMachineExists(mMachineId, HomeUserActivity.this);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+                mBackgroundHandler.post(() -> {
+                    try {
+                        mUserDatabase.checkIfMachineExists(mMachineId, HomeUserActivity.this);
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 });
 
@@ -377,70 +340,6 @@ public class HomeUserActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
-    /**
-     * This method receives returned Place from Place Picker Builder Class
-     *
-     * @param requestCode is the code of Place Picker Builder
-     * @param resultCode  is -1 which indicate to RESULT_OK
-     * @param data        which holds the selected place via user
-     */
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        try {
-
-            Log.i("HomeUserActivity", "onActivityResult is called");
-            // handle result of place picker builder
-            // if request code equals PLACE_PICKER_REQUEST equals 1
-            if (requestCode == PLACE_PICKER_REQUEST) {
-                Log.i("HomeUserActivity", "onActivityResult: requestCode == PLACE_PICKER_REQUEST");
-
-                if (resultCode == RESULT_OK) {
-                    Log.i("HomeUserActivity", "onActivityResult: resultCode is 1 == Result_OK");
-
-                    //getting picked place from the returned Intent
-//                    Place place = PlacePicker.getPlace(this, data);
-
-//                    //if place in not null
-//                    if (place != null) {
-//                        Log.i("HomeUserActivity", "onActivityResult: Place is not null");
-//                        //handle returned place
-//                        onPlaceSelected(place);
-//                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Extracting place name
-     * Assigning place Latitude and Longitude
-     * Moving map camera to the selected place
-     * Displaying a review dialog to user
-     *
-     * @param place is the picked place via user
-     */
-    private void onPlaceSelected(Place place) {
-        try {
-            if (place != null && place.getLatLng() != null) {
-                //declaring location var to hold latitude and longitude
-                mCurrentLocation = new Location("selected location");
-                //assigning selected place latitude
-                mCurrentLocation.setLatitude(place.getLatLng().latitude);
-                //assigning selected place longitude
-                mCurrentLocation.setLongitude(place.getLatLng().longitude);
-
-                Log.i("onPlaceSelected", "place Address = " + place.getAddress());
-                Log.i("onPlaceSelected", "place Address = " + place.getName());
-
-                if (place.getAddress() != null)
-                    mCurrentAddressName = place.getAddress();
-                mCurrentAddressTextView.setText(mCurrentAddressName);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     @Override
     public void onMachineExists(boolean status) {
@@ -452,6 +351,7 @@ public class HomeUserActivity extends AppCompatActivity implements View.OnClickL
                         public void run() {
                             try {
                                 if (mUserDatabase != null) {
+                                    showLoading();
                                     mUserDatabase.addMachine(mMachine, HomeUserActivity.this);
                                 }
                             } catch (Exception e) {
@@ -461,12 +361,7 @@ public class HomeUserActivity extends AppCompatActivity implements View.OnClickL
                     });
                 }
             } else {// if machine exists in database
-                mChangeUIHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(HomeUserActivity.this, getString(R.string.machineAlreadyExists), Toast.LENGTH_LONG).show();
-                    }
-                });
+                mChangeUIHandler.post(() -> Toast.makeText(HomeUserActivity.this, getString(R.string.machineAlreadyExists), Toast.LENGTH_LONG).show());
             }
 
         } catch (Exception e) {
@@ -478,26 +373,25 @@ public class HomeUserActivity extends AppCompatActivity implements View.OnClickL
     public void onAddMachineSuccess(boolean status) {
         Log.i("onAddMachineSuccess", "status is " + status);
 
+        stopLoading();
+
         if (mChangeUIHandler != null)
-            mChangeUIHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        Log.i("mChangeUIHandler", "stopping loading");
-                        Log.i("mChangeUIHandler", "displaying toast");
+            mChangeUIHandler.post(() -> {
+                try {
+                    Log.i("mChangeUIHandler", "stopping loading");
+                    Log.i("mChangeUIHandler", "displaying toast");
 
-                        machineCodeEditText.setText("");
-                        clientNameEditText.setText("");
-                        clientPhoneEditText.setText("");
-                        mCurrentAddressTextView.setText(getString(R.string.add_location));
-                        mMachine = null;
-                        mCurrentAddressName = null;
+                    machineCodeEditText.setText("");
+                    clientNameEditText.setText("");
+                    clientPhoneEditText.setText("");
+                    currentAddressEditText.setText("");
+                    mMachine = null;
+                    mCurrentAddressName = null;
 
-                        Toast.makeText(HomeUserActivity.this, getString(R.string.machineAddedSuccessfully), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(HomeUserActivity.this, getString(R.string.machineAddedSuccessfully), Toast.LENGTH_SHORT).show();
 
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             });
     }

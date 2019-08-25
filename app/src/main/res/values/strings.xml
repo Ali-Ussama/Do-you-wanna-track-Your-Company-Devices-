@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Fawry</string>
+    <string name="app_name">EVD</string>
     <string name="enter_your_code">كلمة المرور</string>
     <string name="login">تسجيل الدخول</string>
     <string name="enter_your_email">البريد الالكترونى</string>
@@ -23,6 +23,8 @@
     <string name="update_user">تعديل بيانات المستخدم</string>
     <string name="send_to">ارسال الى</string>
     <string name="username">username</string>
+    <string name="are_you_sure">هل انت متاكد؟</string>
+    <string name="yes">نعم</string>
 
     <string-array name="users_row_item_options_spinner">
         <item>الغاء</item>
@@ -39,6 +41,7 @@
 
     <string-array name="user_machines_row_item_options_spinner">
         <item>الغاء</item>
+        <item>حذف</item>
         <item>عرض المكان</item>
     </string-array>
 

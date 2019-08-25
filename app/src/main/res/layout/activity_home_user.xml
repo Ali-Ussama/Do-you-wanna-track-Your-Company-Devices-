@@ -26,6 +26,32 @@
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
 
+    <ProgressBar
+        android:id="@+id/activity_home_user_determinateBar_moreThan_20"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:indeterminateBehavior="repeat"
+        android:indeterminateDuration="50"
+        app:layout_constraintTop_toBottomOf="@id/activity_home_user_app_bar_layout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        style="@android:style/Widget.Material.ProgressBar.Horizontal"
+        tools:targetApi="lollipop"
+        android:visibility="gone"/>
+
+    <ProgressBar
+        android:id="@+id/activity_home_user_determinateBar_lessThan_21"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/CircularProgress"
+        style="@style/Widget.AppCompat.ProgressBar"
+        android:indeterminate="true"
+        app:layout_constraintTop_toBottomOf="@id/activity_home_user_app_bar_layout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:visibility="gone"/>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -33,7 +59,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/activity_home_user_app_bar_layout">
+        app:layout_constraintTop_toBottomOf="@id/activity_home_user_determinateBar_moreThan_20">
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/activity_home_user_machine_code_input_layout"

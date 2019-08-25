@@ -129,7 +129,7 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
             machines = new ArrayList<>();
             mMachinesRecyclerView = findViewById(R.id.activity_search_machines_recycler_view);
             mMachinesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-            mAllMachinesRecAdapter = new AllMachinesRecAdapter(machines, this, ADMIN);
+            mAllMachinesRecAdapter = new AllMachinesRecAdapter(machines, SearchActivity.this, ADMIN);
             mMachinesRecyclerView.setAdapter(mAllMachinesRecAdapter);
             mMachinesRecyclerView.setNestedScrollingEnabled(false);
 
@@ -515,17 +515,23 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
     @Override
     public void onMachineItemDelete(final MachineModel machine) {
         try {
+            Log.i(TAG,"onMachineItemDelete() is called");
             if (mThread == null || mBackgroundHandler == null) {
+                Log.i(TAG,"onMachineItemDelete(): initializing Thread");
+
                 mThread = new HandlerThread(HANDLER_THREAD_NAME);
                 mBackgroundHandler = new Handler(mThread.getLooper());
             }
             if (mUserDatabase == null) {
+                Log.i(TAG,"onMachineItemDelete(): intializing userDatabase Object");
                 mUserDatabase = new UserDatabase();
             }
             mBackgroundHandler.post(new Runnable() {
                 @Override
                 public void run() {
                     try {
+                        Log.i(TAG,"onMachineItemDelete(): calling deleteMachine in a background thread with machineUID = "+ machine.getmUID());
+
                         mUserDatabase.deleteMachine(machine, SearchActivity.this);
                     } catch (Exception e) {
                         e.printStackTrace();
