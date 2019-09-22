@@ -393,28 +393,20 @@ public class HomeAdminActivity extends AppCompatActivity implements UserDatabase
     }
 
     @Override
-    public void onLoginSuccess(boolean state, String Type, String username) {
+    public void onLoginSuccess(boolean state, String Type, String username,String id) {
         try {
             if (!state) {
                 //add user to database
-                mBackgroundHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            mUserDatabase.addUser(user, HomeAdminActivity.this);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-
+                mBackgroundHandler.post(() -> {
+                    try {
+                        mUserDatabase.addUser(user, HomeAdminActivity.this);
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
+
                 });
             } else {
-                mChangeUIHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(HomeAdminActivity.this, "هذا المستخدم موجود بالفعل", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                mChangeUIHandler.post(() -> Toast.makeText(HomeAdminActivity.this, "هذا المستخدم موجود بالفعل", Toast.LENGTH_SHORT).show());
             }
         } catch (Exception e) {
             e.printStackTrace();

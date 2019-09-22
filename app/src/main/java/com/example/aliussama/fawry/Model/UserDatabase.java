@@ -55,27 +55,27 @@ public class UserDatabase {
                         Log.i(TAG, "returned codes are not null");
 
                         for (String code : codes.keySet()) {
-                                String mPhone = Objects.requireNonNull(Objects.requireNonNull(codes.get(code)).get("phone")).toLowerCase();
-                                String id = Objects.requireNonNull(Objects.requireNonNull(codes.get(code)).get("id")).toLowerCase();
-                                String type = Objects.requireNonNull(Objects.requireNonNull(codes.get(code)).get("type")).toLowerCase();
+                            String mPhone = Objects.requireNonNull(Objects.requireNonNull(codes.get(code)).get("phone")).toLowerCase();
+                            String id = Objects.requireNonNull(Objects.requireNonNull(codes.get(code)).get("id")).toLowerCase();
+                            String type = Objects.requireNonNull(Objects.requireNonNull(codes.get(code)).get("type")).toLowerCase();
 
-                                Log.i(TAG, "current username is : " + id + "\n phone : " + mPhone);
-                                if (mPhone.matches(phone.toLowerCase()) && id.matches(email.toLowerCase())) {
-                                    Log.i(TAG, "User Code is found in Firebase database");
-                                    founded = true;
-                                    Log.i(TAG, "Sending callback with true value");
-                                    if (type.matches("admin")) {
-                                        callback.onLoginSuccess(true, "admin",email);
-                                    } else if (type.matches("user")) {
-                                        callback.onLoginSuccess(true, "user",email);
-                                    }
-                                    break;
+                            Log.i(TAG, "current username is : " + id + "\n phone : " + mPhone);
+                            if (mPhone.matches(phone.toLowerCase()) && id.matches(email.toLowerCase())) {
+                                Log.i(TAG, "User Code is found in Firebase database");
+                                founded = true;
+                                Log.i(TAG, "Sending callback with true value");
+                                if (type.matches("admin")) {
+                                    callback.onLoginSuccess(true, "admin", email, id);
+                                } else if (type.matches("user")) {
+                                    callback.onLoginSuccess(true, "user", email, id);
                                 }
+                                break;
+                            }
 
                         }
                         if (!founded) {
                             Log.i(TAG, "User Code is not found in Firebase database");
-                            callback.onLoginSuccess(false, null,null);
+                            callback.onLoginSuccess(false, null, null, null);
                         }
                     }
                 } catch (Exception e) {
@@ -95,26 +95,22 @@ public class UserDatabase {
             final String TAG = "addUser";
             DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
 
-            Log.i(TAG, "Firebase reference is initialized");
+            Log.i(TAG, "FireBase reference is initialized");
 
-            reference.child("users").push().setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    if (task.isComplete() && task.isSuccessful()) {
-                        if (callback != null)
-                            callback.onAddUserSuccess(true);
-                    } else {
-                        if (callback != null)
-                            callback.onAddUserSuccess(false);
-                    }
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    e.printStackTrace();
+            reference.child("users").push().setValue(user).addOnCompleteListener(task -> {
+
+                if (task.isComplete() && task.isSuccessful()) {
                     if (callback != null)
                         callback.onAddUserSuccess(true);
+                } else {
+                    if (callback != null)
+                        callback.onAddUserSuccess(false);
                 }
+            }).addOnFailureListener(e -> {
+
+                e.printStackTrace();
+                if (callback != null)
+                    callback.onAddUserSuccess(true);
             });
         } catch (Exception e) {
             e.printStackTrace();
@@ -235,14 +231,15 @@ public class UserDatabase {
                         if (machinesResult != null) {
                             for (String key : machinesResult.keySet()) {
                                 machines.add(new MachineModel(
-                                        machinesResult.get(key).get("mUID"),
-                                        machinesResult.get(key).get("mMachineId"),
-                                        machinesResult.get(key).get("mClientName"),
-                                        machinesResult.get(key).get("mClientPhone"),
-                                        machinesResult.get(key).get("mAddress"),
-                                        machinesResult.get(key).get("mLatitude"),
-                                        machinesResult.get(key).get("mLongitude"),
-                                        machinesResult.get(key).get("mRepresentativeName")));
+                                        Objects.requireNonNull(machinesResult.get(key)).get("mUID"),
+                                        Objects.requireNonNull(machinesResult.get(key)).get("mMachineId"),
+                                        Objects.requireNonNull(machinesResult.get(key)).get("mClientName"),
+                                        Objects.requireNonNull(machinesResult.get(key)).get("mClientPhone"),
+                                        Objects.requireNonNull(machinesResult.get(key)).get("mAddress"),
+                                        Objects.requireNonNull(machinesResult.get(key)).get("mLatitude"),
+                                        Objects.requireNonNull(machinesResult.get(key)).get("mLongitude"),
+                                        Objects.requireNonNull(machinesResult.get(key)).get("mRepresentativeName"),
+                                        Objects.requireNonNull(machinesResult.get(key)).get("userID")));
                             }
 
                             if (callback != null)
@@ -274,28 +271,106 @@ public class UserDatabase {
         }
     }
 
-    public void addMachine(final MachineModel machine, final OnAddMachineListener callback) {
+    public void addMachine(final MachineModel machine, UserModel userModel, final OnAddMachineListener callback) {
         try {
             DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
             String key = reference.child("machines").push().getKey();
             machine.setmUID(key);
             if (key != null)
-                reference.child("machines").child(key).setValue(machine).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isComplete() && task.isSuccessful()) {
-                            if (callback != null)
-                                callback.onAddMachineSuccess(true);
-                        } else if (callback != null)
-                            callback.onAddMachineSuccess(false);
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        if (callback != null)
-                            callback.onAddMachineFailure(e);
-                    }
+                reference.child("machines").child(key).setValue(machine).addOnCompleteListener(task -> {
+                    if (task.isComplete() && task.isSuccessful()) {
+//                        if (callback != null)
+//                            callback.onAddMachineSuccess(true);
+
+                        addMachinePerUser(machine, userModel, callback);
+
+                    } else if (callback != null)
+                        callback.onAddMachineSuccess(false);
+
+                }).addOnFailureListener(e -> {
+                    if (callback != null)
+                        callback.onAddMachineFailure(e);
                 });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void addMachinePerUser(final MachineModel machine, UserModel userModel, final OnAddMachineListener callback) {
+        try {
+            DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+            String key = reference.child("machines").child(userModel.getId()).push().getKey();
+            machine.setmUID(key);
+            if (key != null)
+                reference.child("machines").child(userModel.getId()).child(key).setValue(machine).addOnCompleteListener(task -> {
+
+                    if (task.isComplete() && task.isSuccessful()) {
+
+                        if (callback != null)
+                            callback.onAddMachineSuccess(true);
+
+                    } else if (callback != null) {
+                        callback.onAddMachineSuccess(false);
+                    }
+                }).addOnFailureListener(e -> {
+                    if (callback != null)
+                        callback.onAddMachineFailure(e);
+                });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void getUserMachines(String userID, final ReadingAllDatabaseCallback callback) {
+        try {
+            DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+            reference.child("UsersMachines").child(userID).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    try {
+
+                        ArrayList<MachineModel> machines = new ArrayList<>();
+
+                        Map<String, Map<String, String>> machinesResult = (Map<String, Map<String, String>>) dataSnapshot.getValue();
+
+                        if (machinesResult != null) {
+                            for (String key : machinesResult.keySet()) {
+                                machines.add(new MachineModel(
+                                        Objects.requireNonNull(machinesResult.get(key)).get("mUID"),
+                                        Objects.requireNonNull(machinesResult.get(key)).get("mMachineId"),
+                                        Objects.requireNonNull(machinesResult.get(key)).get("mClientName"),
+                                        Objects.requireNonNull(machinesResult.get(key)).get("mClientPhone"),
+                                        Objects.requireNonNull(machinesResult.get(key)).get("mAddress"),
+                                        Objects.requireNonNull(machinesResult.get(key)).get("mLatitude"),
+                                        Objects.requireNonNull(machinesResult.get(key)).get("mLongitude"),
+                                        Objects.requireNonNull(machinesResult.get(key)).get("mRepresentativeName"),
+                                        Objects.requireNonNull(machinesResult.get(key)).get("userID")));
+                            }
+
+                            if (callback != null)
+                                callback.onAllMachinesSuccess(machines);
+
+                        } else {
+
+                            if (callback != null)
+                                callback.onAllMachinesFailure("No machines added in database yet");
+
+                        }
+                    } catch (Exception e) {
+                        if (callback != null)
+                            callback.onAllMachinesFailure(e.getMessage());
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    if (callback != null)
+                        callback.onAllMachinesFailure(databaseError.getMessage());
+                    else {
+                        databaseError.toException().printStackTrace();
+                    }
+                }
+            });
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -312,7 +387,7 @@ public class UserDatabase {
                         Map<String, Map<String, String>> result = (Map<String, Map<String, String>>) dataSnapshot.getValue();
                         if (result != null) {
                             for (String key : result.keySet()) {
-                                if (result.get(key).get("mMachineId").matches(machineCode)) {
+                                if (Objects.requireNonNull(Objects.requireNonNull(result.get(key)).get("mMachineId")).matches(machineCode)) {
                                     mMachineIsFounded = true;
                                     break;
                                 }
@@ -346,23 +421,23 @@ public class UserDatabase {
 
     public void deleteMachine(MachineModel machine, final SearchActivityCallback callback) {
         try {
-            Log.i("UserDatabase","DeleteMachine() is called");
+            Log.i("UserDatabase", "DeleteMachine() is called");
             DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
             reference.child("machines").child(machine.getmUID()).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
-                    Log.i("UserDatabase","DeleteMachine(): addOnCompleteListener is called");
+                    Log.i("UserDatabase", "DeleteMachine(): addOnCompleteListener is called");
 
                     if (task.isSuccessful() && task.isComplete()) {
-                        Log.i("UserDatabase","DeleteMachine(): machine is deleted successfully");
+                        Log.i("UserDatabase", "DeleteMachine(): machine is deleted successfully");
                         if (callback != null) {
-                            Log.i("UserDatabase","DeleteMachine(): sending callback to onMachineDeletedSuccess(true)");
+                            Log.i("UserDatabase", "DeleteMachine(): sending callback to onMachineDeletedSuccess(true)");
                             callback.onMachineDeletedSuccess(true);
                         }
                     } else {
-                        Log.i("UserDatabase","DeleteMachine(): task isn't successful or isn't completed");
+                        Log.i("UserDatabase", "DeleteMachine(): task isn't successful or isn't completed");
                         if (callback != null) {
-                            Log.i("UserDatabase","DeleteMachine(): sending callback to onMachineDeletedSuccess(false)");
+                            Log.i("UserDatabase", "DeleteMachine(): sending callback to onMachineDeletedSuccess(false)");
                             callback.onMachineDeletedSuccess(false);
                         }
                     }
@@ -370,10 +445,10 @@ public class UserDatabase {
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
-                    Log.i("UserDatabase","DeleteMachine(): addOnFailureListener is called");
+                    Log.i("UserDatabase", "DeleteMachine(): addOnFailureListener is called");
 
                     if (callback != null) {
-                        Log.i("UserDatabase","DeleteMachine(): passing the exception SearchActivity via onMachineDeleteFailure() callback");
+                        Log.i("UserDatabase", "DeleteMachine(): passing the exception SearchActivity via onMachineDeleteFailure() callback");
                         callback.onMachineDeleteFailure(e);
                     }
                 }
@@ -388,24 +463,52 @@ public class UserDatabase {
         Log.i("updateMachine", "machine ID" + machine.getmMachineId());
 
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
-        reference.child("machines").child(machine.getmUID()).setValue(machine).addOnCompleteListener(new OnCompleteListener<Void>() {
+        reference.child("machines").child(machine.getmUID()).setValue(machine).addOnCompleteListener(task -> {
+
+            if (task.isComplete() && task.isSuccessful()) {
+                Log.i("updateMachine", "machine is updated");
+
+                if (callback != null)
+                    updateMachinePerUser(machine,callback);
+
+            } else {
+
+                if (callback != null)
+                    callback.onMachineUpdatedSuccess(false);
+
+            }
+        }).addOnFailureListener(e -> {
+
+            if (callback != null)
+                callback.onMachineUpdatedFailure(e);
+        });
+    }
+
+    public void updateMachinePerUser(MachineModel machine, final SearchActivityCallback callback) {
+
+        Log.i("updateMachinePerUser", "machine ID" + machine.getmMachineId());
+
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+        reference.child("machines").child(machine.getUserID()).child(machine.getmUID()).setValue(machine).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isComplete() && task.isSuccessful()) {
+
                     Log.i("updateMachine", "machine is updated");
+
                     if (callback != null)
                         callback.onMachineUpdatedSuccess(true);
+
                 } else {
                     if (callback != null)
                         callback.onMachineUpdatedSuccess(false);
                 }
             }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                if (callback != null)
-                    callback.onMachineUpdatedFailure(e);
-            }
+        }).addOnFailureListener(e -> {
+
+            if (callback != null)
+                callback.onMachineUpdatedFailure(e);
+
         });
     }
 }

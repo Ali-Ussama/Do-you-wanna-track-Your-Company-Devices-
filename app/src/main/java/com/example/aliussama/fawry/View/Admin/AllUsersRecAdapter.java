@@ -193,7 +193,8 @@ public class AllUsersRecAdapter extends RecyclerView.Adapter<AllUsersRecAdapter.
 
                             users.get(getAdapterPosition()).setPhone(updateEmailEditText.getText().toString());
                             users.get(getAdapterPosition()).setName(updateUsernameEditText.getText().toString());
-                            users.get(getAdapterPosition()).setId(updateUsernameEditText.getText().toString());
+//                            users.get(getAdapterPosition()).setId(updateUsernameEditText.getText().toString());
+
                             update_layout.setVisibility(View.GONE);
                             row_item_layout.setVisibility(View.VISIBLE);
                             options.setSelection(getAdapterPosition(), false);

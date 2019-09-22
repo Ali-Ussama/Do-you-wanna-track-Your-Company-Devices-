@@ -12,8 +12,9 @@ public class MachineModel implements Serializable {
     private String mLatitude;
     private String mLongitude;
     private String mRepresentativeName;
+    private String userID;
 
-    public MachineModel(String mMachineId, String mClientName, String mClientPhone, String mAddress, String mLatitude, String mLongitude,String representativeName) {
+    public MachineModel(String mMachineId, String mClientName, String mClientPhone, String mAddress, String mLatitude, String mLongitude,String representativeName,String userId) {
         this.mMachineId = mMachineId;
         this.mClientName = mClientName;
         this.mClientPhone = mClientPhone;
@@ -21,9 +22,10 @@ public class MachineModel implements Serializable {
         this.mLatitude = mLatitude;
         this.mLongitude = mLongitude;
         this.mRepresentativeName = representativeName;
+        this.userID = userId;
     }
 
-    public MachineModel(String mUID, String mMachineId, String mClientName, String mClientPhone, String mAddress, String mLatitude, String mLongitude,String representativeName) {
+    public MachineModel(String mUID, String mMachineId, String mClientName, String mClientPhone, String mAddress, String mLatitude, String mLongitude,String representativeName,String userId) {
         this.mUID = mUID;
         this.mMachineId = mMachineId;
         this.mClientName = mClientName;
@@ -32,6 +34,7 @@ public class MachineModel implements Serializable {
         this.mLatitude = mLatitude;
         this.mLongitude = mLongitude;
         this.mRepresentativeName = representativeName;
+        this.userID = userId;
     }
 
     public String getmUID() {
@@ -96,5 +99,13 @@ public class MachineModel implements Serializable {
 
     public void setmRepresentativeName(String mRepresentativeName) {
         this.mRepresentativeName = mRepresentativeName;
+    }
+
+    public String getUserID() {
+        return userID;
+    }
+
+    public void setUserID(String userID) {
+        this.userID = userID;
     }
 }

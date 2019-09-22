@@ -33,6 +33,7 @@ import com.example.aliussama.fawry.Model.Callbacks.OnAddMachineListener;
 import com.example.aliussama.fawry.Model.GPSTracker;
 import com.example.aliussama.fawry.Model.MachineModel;
 import com.example.aliussama.fawry.Model.UserDatabase;
+import com.example.aliussama.fawry.Model.UserModel;
 import com.example.aliussama.fawry.R;
 import com.example.aliussama.fawry.View.LoginActivity;
 import com.example.aliussama.fawry.View.ScannerActivity;
@@ -226,7 +227,7 @@ public class HomeUserActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void showLoading() {
-        try{
+        try {
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
                 mProgressBarMoreThanAPI20.setVisibility(View.VISIBLE);
                 mProgressBarLessThanAPI21.setVisibility(View.GONE);
@@ -234,19 +235,20 @@ public class HomeUserActivity extends AppCompatActivity implements View.OnClickL
                 mProgressBarMoreThanAPI20.setVisibility(View.GONE);
                 mProgressBarLessThanAPI21.setVisibility(View.VISIBLE);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void stopLoading(){
-        try{
+    private void stopLoading() {
+        try {
             mProgressBarMoreThanAPI20.setVisibility(View.GONE);
             mProgressBarLessThanAPI21.setVisibility(View.GONE);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == 1) {
@@ -307,9 +309,9 @@ public class HomeUserActivity extends AppCompatActivity implements View.OnClickL
             } else if (mCurrentLocation == null) {
                 Toast.makeText(this, getString(R.string.please_choose_your_current_location), Toast.LENGTH_SHORT).show();
 
-            } else if(currentAddressEditText.getText() == null || currentAddressEditText.getText().toString().isEmpty()){
+            } else if (currentAddressEditText.getText() == null || currentAddressEditText.getText().toString().isEmpty()) {
                 currentAddressEditText.setError("مطلوب");
-            }else {
+            } else {
                 showLoading();
                 mMachineId = machineCodeEditText.getText().toString();
                 String clientName = clientNameEditText.getText().toString();
@@ -317,6 +319,8 @@ public class HomeUserActivity extends AppCompatActivity implements View.OnClickL
                 String currentLocationLatitude = String.valueOf(mCurrentLocation.getLatitude());
                 String currentLocationLongitude = String.valueOf(mCurrentLocation.getLongitude());
                 String mCurrentAddressName = currentAddressEditText.getText().toString();
+                String userName = getUsername();
+                String userID = getUserID();
                 mMachine = new MachineModel(
                         mMachineId,
                         clientName,
@@ -324,7 +328,8 @@ public class HomeUserActivity extends AppCompatActivity implements View.OnClickL
                         mCurrentAddressName,
                         currentLocationLatitude,
                         currentLocationLongitude,
-                        getUsername());
+                        userName,
+                        userID);
 
                 mBackgroundHandler.post(() -> {
                     try {
@@ -352,11 +357,28 @@ public class HomeUserActivity extends AppCompatActivity implements View.OnClickL
                             try {
                                 if (mUserDatabase != null) {
                                     showLoading();
-                                    mUserDatabase.addMachine(mMachine, HomeUserActivity.this);
+                                    UserModel userModel = getUserModel();
+                                    mUserDatabase.addMachine(mMachine, userModel, HomeUserActivity.this);
+
                                 }
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
+                        }
+
+                        private UserModel getUserModel() {
+                            try {
+                                SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.shared_preferences_file_name), MODE_PRIVATE);
+                                String username = sharedPreferences.getString(getString(R.string.username), getString(R.string.default_value_of_shared_preferences_string));
+                                String type = sharedPreferences.getString(getString(R.string.type_key), getString(R.string.default_value_of_shared_preferences_string));
+                                String phone = getString(R.string.default_value_of_shared_preferences_string);
+                                String id = sharedPreferences.getString(getString(R.string.user_id), getString(R.string.default_value_of_shared_preferences_string));
+
+                                return new UserModel(id, username, phone, type);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            return null;
                         }
                     });
                 }
@@ -418,16 +440,30 @@ public class HomeUserActivity extends AppCompatActivity implements View.OnClickL
         return false;
     }
 
-    private String getUsername(){
-        SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.shared_preferences_file_name),MODE_PRIVATE);
+    private String getUsername() {
+        SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.shared_preferences_file_name), MODE_PRIVATE);
         String username = "none";
         try {
             username = sharedPreferences.getString(getString(R.string.username), "none");
-            Log.i(HOME_USER_TAG,"Current User is : "+username);
+            Log.i(HOME_USER_TAG, "Current User is : " + username);
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return username;
     }
+
+    private String getUserID() {
+        SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.shared_preferences_file_name), MODE_PRIVATE);
+        String userID = "none";
+        try {
+            userID = sharedPreferences.getString(getString(R.string.user_id), "none");
+            Log.i(HOME_USER_TAG, "Current User ID is : " + userID);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return userID;
+    }
+
 }

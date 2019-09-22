@@ -146,7 +146,7 @@ public class UserSearchActivity extends AppCompatActivity implements SearchView.
                 mBackgroundHandler.post(() -> {
                     try {
                         if (mUserDatabase != null) {
-                            mUserDatabase.getAllMachines(UserSearchActivity.this);
+                            mUserDatabase.getUserMachines(getUserID(),UserSearchActivity.this);
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -501,6 +501,19 @@ public class UserSearchActivity extends AppCompatActivity implements SearchView.
             e.printStackTrace();
         }
         return username;
+    }
+
+    private String getUserID(){
+        SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.shared_preferences_file_name),MODE_PRIVATE);
+        String userID = "none";
+        try {
+            userID = sharedPreferences.getString(getString(R.string.user_id), "none");
+            Log.i(TAG,"Current User ID is : "+userID);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return userID;
     }
 
 }

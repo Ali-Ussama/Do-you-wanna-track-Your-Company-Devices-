@@ -162,26 +162,23 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     @Override
-    public void onLoginSuccess(final boolean state, final String type,final String mUsername) {
+    public void onLoginSuccess(final boolean state, final String type, final String mUsername, String id) {
         try {
             Log.i(LOGIN_ACTIVITY_TAG, "onLoginSuccess is called");
             if (mChangeUIHandler != null) {
                 //check Firebase Database if user or Admin.
-                mChangeUIHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        mProgressBarMoreThanAPI20.setVisibility(View.GONE);
-                        mProgressBarLessThanAPI21.setVisibility(View.GONE);
+                mChangeUIHandler.post(() -> {
+                    mProgressBarMoreThanAPI20.setVisibility(View.GONE);
+                    mProgressBarLessThanAPI21.setVisibility(View.GONE);
 
-                        if (state) {
-                            addUserIntoOfflineDatabase(type,mUsername);
-                            Log.i(LOGIN_ACTIVITY_TAG, "onLoginSuccess state is true and userType is " + type);
-                            //update UI and navigate to Home Screen
-                            updateUI(type);
-                        } else {
-                            Log.i(LOGIN_ACTIVITY_TAG, "onLoginSuccess state is false, Entered code not found");
-                            Toast.makeText(LoginActivity.this, "اسم المستخدم او كلمة المرور غير صحيح", Toast.LENGTH_SHORT).show();
-                        }
+                    if (state) {
+                        addUserIntoOfflineDatabase(type, mUsername, id);
+                        Log.i(LOGIN_ACTIVITY_TAG, "onLoginSuccess state is true and userType is " + type);
+                        //update UI and navigate to Home Screen
+                        updateUI(type);
+                    } else {
+                        Log.i(LOGIN_ACTIVITY_TAG, "onLoginSuccess state is false, Entered code not found");
+                        Toast.makeText(LoginActivity.this, "اسم المستخدم او كلمة المرور غير صحيح", Toast.LENGTH_SHORT).show();
                     }
                 });
             }
@@ -218,14 +215,17 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    private void addUserIntoOfflineDatabase(String type,String mUsername) {
+    private void addUserIntoOfflineDatabase(String type, String mUsername, String id) {
         try {
             SharedPreferences mPreferences = getSharedPreferences(getString(R.string.shared_preferences_file_name), MODE_PRIVATE);
             SharedPreferences.Editor editor = mPreferences.edit();
-            editor.putString(getString(R.string.username),mUsername);
+
+            editor.putString(getString(R.string.username), mUsername);
             editor.putString(getString(R.string.type_key), type);
+            editor.putString(getString(R.string.user_id), id);
+
             editor.apply();
-            Log.i(LOGIN_ACTIVITY_TAG,"Current User is : "+mUsername);
+            Log.i(LOGIN_ACTIVITY_TAG, "Current User is : " + mUsername);
         } catch (Exception e) {
             e.printStackTrace();
         }

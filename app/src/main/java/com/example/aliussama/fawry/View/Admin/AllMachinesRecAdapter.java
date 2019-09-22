@@ -443,7 +443,8 @@ public class AllMachinesRecAdapter extends RecyclerView.Adapter<AllMachinesRecAd
                             mCurrentAddressName,
                             currentLocationLatitude,
                             currentLocationLongitude,
-                            data.get(getAdapterPosition()).getmRepresentativeName());
+                            data.get(getAdapterPosition()).getmRepresentativeName(),
+                            data.get(getAdapterPosition()).getUserID());
 
                     if (mCallback != null) {
                         mCallback.onMachineItemUpdate(mMachine);
@@ -527,6 +528,7 @@ public class AllMachinesRecAdapter extends RecyclerView.Adapter<AllMachinesRecAd
         }
 
         private void saveCurrentAdapterPosition(View v) {
+
             SharedPreferences sharedPreferences = v.getContext().getSharedPreferences("AllMachinesRecAdapterPosition", MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putInt("position", getAdapterPosition());
