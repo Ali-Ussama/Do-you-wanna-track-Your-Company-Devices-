@@ -62,6 +62,16 @@ public class HomeUserActivity extends AppCompatActivity implements View.OnClickL
     @BindView(R.id.activity_home_user_determinateBar_lessThan_21)
     ProgressBar mProgressBarLessThanAPI21;
 
+    @BindView(R.id.activity_home_user_machine_code_edit_text2)
+    EditText machineCodeEditText2;
+
+    @BindView(R.id.activity_home_user_machine_code_edit_text3)
+    EditText machineCodeEditText3;
+
+    @BindView(R.id.activity_home_user_machine_code_edit_text4)
+    EditText machineCodeEditText4;
+
+
     public static EditText machineCodeEditText;
     EditText clientNameEditText, clientPhoneEditText;
     EditText currentAddressEditText;
@@ -128,7 +138,7 @@ public class HomeUserActivity extends AppCompatActivity implements View.OnClickL
             clientPhoneEditText = findViewById(R.id.activity_home_user_client_phone_edit_text);
 
             addLocationFab = findViewById(R.id.activity_home_user_add_location_fab);
-            mScanMachineSerialNumberFab = findViewById(R.id.activity_home_user_machine_code_fab);
+//            mScanMachineSerialNumberFab = findViewById(R.id.activity_home_user_machine_code_fab);
             addMachineButton = findViewById(R.id.activity_home_user_add_machine_button);
             currentAddressEditText = findViewById(R.id.activity_home_user_add_location_text_view);
 
@@ -146,7 +156,7 @@ public class HomeUserActivity extends AppCompatActivity implements View.OnClickL
 
             addMachineButton.setOnClickListener(this);
             addLocationFab.setOnClickListener(this);
-            mScanMachineSerialNumberFab.setOnClickListener(this);
+//            mScanMachineSerialNumberFab.setOnClickListener(this);
 
         } catch (Exception e) {
             e.printStackTrace();

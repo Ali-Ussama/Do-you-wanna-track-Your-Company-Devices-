@@ -452,7 +452,27 @@ public class UserSearchActivity extends AppCompatActivity implements SearchView.
 
     @Override
     public void onMachineItemUpdate(MachineModel machine) {
+        try {
+            if (mThread == null || mBackgroundHandler == null) {
+                mThread = new HandlerThread(HANDLER_THREAD_NAME);
+                mBackgroundHandler = new Handler(mThread.getLooper());
+            }
+            if (mUserDatabase == null) {
+                mUserDatabase = new UserDatabase();
+            }
+            Log.i("onMachineItemUpdate", "machine ID" + machine.getmMachineId());
 
+            mBackgroundHandler.post(() -> {
+                try {
+                    Log.i("mBackgroundThread", "machine ID" + machine.getmMachineId());
+                    mUserDatabase.updateMachine(machine, UserSearchActivity.this);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

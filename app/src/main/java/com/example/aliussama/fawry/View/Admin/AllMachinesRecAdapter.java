@@ -196,13 +196,13 @@ public class AllMachinesRecAdapter extends RecyclerView.Adapter<AllMachinesRecAd
 
                 ArrayAdapter<CharSequence> adapter;
                 String userType = CheckUserType();
-                if (!userType.isEmpty() && userType.matches("user")) {
-                    adapter = ArrayAdapter.createFromResource(v.getContext(),
-                            R.array.user_machines_row_item_options_spinner, android.R.layout.simple_spinner_item);
-                } else {
+//                if (!userType.isEmpty() && userType.matches("user")) {
+//                    adapter = ArrayAdapter.createFromResource(v.getContext(),
+//                            R.array.user_machines_row_item_options_spinner, android.R.layout.simple_spinner_item);
+//                } else {
                     adapter = ArrayAdapter.createFromResource(v.getContext(),
                             R.array.machines_row_item_options_spinner, android.R.layout.simple_spinner_item);
-                }
+//                }
                 // Specify the layout to use when the list of choices appears
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
@@ -259,7 +259,7 @@ public class AllMachinesRecAdapter extends RecyclerView.Adapter<AllMachinesRecAd
                 Log.i("onItemSelected", "userType" + userType);
 
                 //Admin actions on machines
-                if (userType.matches(ADMIN)) {
+//                if (userType.matches(ADMIN)) {
                     Log.i("onItemSelected", "User Machine Action");
                     if (mSpinnerCreated) {
                         Log.i("onItemSelected", "item position" + i);
@@ -277,25 +277,25 @@ public class AllMachinesRecAdapter extends RecyclerView.Adapter<AllMachinesRecAd
                             mOptionsSpinner.setSelection(0, true);
                         }
                     }
-                } else {//User actions on machines
-                    Log.i("onItemSelected", "User Machine Action");
-                    if (mSpinnerCreated) {
-                        Log.i("onItemSelected", "item position" + i);
-                        if (i == 0) {
-                            Log.i("onItemSelected", "الغاء");
-                            update_layout.setVisibility(View.GONE);
-                        } else if (i == 1) {
-                            //share current location
-                            displayAlertDialog(view);
-
-                        } else if (i == 2) {
-                            //share current location
-                            shareCurrentLocation(view);
-                            mOptionsSpinner.setSelection(getAdapterPosition(), false);
-                            mOptionsSpinner.setSelection(0, true);
-                        }
-                    }
-                }
+//                } else {//User actions on machines
+//                    Log.i("onItemSelected", "User Machine Action");
+//                    if (mSpinnerCreated) {
+//                        Log.i("onItemSelected", "item position" + i);
+//                        if (i == 0) {
+//                            Log.i("onItemSelected", "الغاء");
+//                            update_layout.setVisibility(View.GONE);
+//                        } else if (i == 1) {
+//                            //share current location
+//                            displayAlertDialog(view);
+//
+//                        } else if (i == 2) {
+//                            //share current location
+//                            shareCurrentLocation(view);
+//                            mOptionsSpinner.setSelection(getAdapterPosition(), false);
+//                            mOptionsSpinner.setSelection(0, true);
+//                        }
+//                    }
+//                }
             } catch (Exception e) {
                 e.printStackTrace();
             }

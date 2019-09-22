@@ -28,10 +28,10 @@ import java.util.Objects;
 
 public class UserDatabase {
 
+    private static final String TAG = "UserDatabase";
     private final String GET_ALL_USERS_TAG = "getAllUsers";
     private final String DELETE_USER_TAG = "deleteUser";
     private final String UPDATE_USER_TAG = "updateUser";
-
 
     public void CheckIfUserExists(final String phone, final String email, final UserDatabaseCallback callback) {
 
@@ -44,30 +44,47 @@ public class UserDatabase {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 try {
+
                     Log.i(TAG, "Extracting codes from data Snapshot");
+
                     GenericTypeIndicator<Map<String, Map<String, String>>> t = new GenericTypeIndicator<Map<String, Map<String, String>>>() {
                     };
+
                     Map<String, Map<String, String>> codes = dataSnapshot.getValue(t);
+
                     Log.i(TAG, "Declaring var to check found code");
+
                     boolean founded = false;
+
                     if (codes != null) {
                         Log.i(TAG, "username: " + email + " password: " + phone);
                         Log.i(TAG, "returned codes are not null");
 
                         for (String code : codes.keySet()) {
+
                             String mPhone = Objects.requireNonNull(Objects.requireNonNull(codes.get(code)).get("phone")).toLowerCase();
                             String id = Objects.requireNonNull(Objects.requireNonNull(codes.get(code)).get("id")).toLowerCase();
+                            String name = Objects.requireNonNull(Objects.requireNonNull(codes.get(code)).get("name")).toLowerCase();
                             String type = Objects.requireNonNull(Objects.requireNonNull(codes.get(code)).get("type")).toLowerCase();
 
-                            Log.i(TAG, "current username is : " + id + "\n phone : " + mPhone);
-                            if (mPhone.matches(phone.toLowerCase()) && id.matches(email.toLowerCase())) {
-                                Log.i(TAG, "User Code is found in Firebase database");
+                            Log.i(TAG, "current username name = " + name + "\n - phone : " + mPhone);
+
+                            if (mPhone.matches(phone.toLowerCase()) && name.matches(email.toLowerCase())) {
+
+                                Log.i(TAG, "User Code is found in FireBase database");
+
                                 founded = true;
+
                                 Log.i(TAG, "Sending callback with true value");
+
                                 if (type.matches("admin")) {
+
                                     callback.onLoginSuccess(true, "admin", email, id);
+
                                 } else if (type.matches("user")) {
+
                                     callback.onLoginSuccess(true, "user", email, id);
+
                                 }
                                 break;
                             }
@@ -202,6 +219,7 @@ public class UserDatabase {
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful() && task.isComplete()) {
                     Log.i(UPDATE_USER_TAG, "onComplete: user is updated successfully");
+                    updateUserMachines(user);
                 } else if (task.isCanceled()) {
                     Log.i(UPDATE_USER_TAG, "onComplete: task is Canceled");
 
@@ -212,6 +230,75 @@ public class UserDatabase {
             @Override
             public void onFailure(@NonNull Exception e) {
                 e.printStackTrace();
+            }
+        });
+    }
+
+    private void updateUserMachines(UserModel user) {
+        getUserMachines(user.getId(), new ReadingAllDatabaseCallback() {
+            @Override
+            public void onAllUsersSuccess(ArrayList<UserModel> users) {
+
+            }
+
+            @Override
+            public void onAllUsersFailure(Exception e) {
+
+            }
+
+            @Override
+            public void onAllMachinesSuccess(ArrayList<MachineModel> machines) {
+                for (MachineModel machine : machines) {
+
+                    machine.setmRepresentativeName(user.getName());
+
+                    updateMachine(machine, new SearchActivityCallback() {
+                        @Override
+                        public void onUserItemDelete(UserModel user) {
+
+                        }
+
+                        @Override
+                        public void onUserItemUpdate(UserModel user) {
+
+                        }
+
+                        @Override
+                        public void onMachineItemDelete(MachineModel machine) {
+
+                        }
+
+                        @Override
+                        public void onMachineItemUpdate(MachineModel machine) {
+
+                        }
+
+                        @Override
+                        public void onMachineDeletedSuccess(boolean status) {
+
+                        }
+
+                        @Override
+                        public void onMachineDeleteFailure(Exception e) {
+
+                        }
+
+                        @Override
+                        public void onMachineUpdatedSuccess(boolean status) {
+                            Log.i(TAG, "updateUserMachines(): machine updated successfully");
+                        }
+
+                        @Override
+                        public void onMachineUpdatedFailure(Exception e) {
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onAllMachinesFailure(String message) {
+
             }
         });
     }
@@ -299,10 +386,10 @@ public class UserDatabase {
     private void addMachinePerUser(final MachineModel machine, UserModel userModel, final OnAddMachineListener callback) {
         try {
             DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
-            String key = reference.child("machines").child(userModel.getId()).push().getKey();
+            String key = reference.child("UsersMachines").child(userModel.getId()).push().getKey();
             machine.setmUID(key);
             if (key != null)
-                reference.child("machines").child(userModel.getId()).child(key).setValue(machine).addOnCompleteListener(task -> {
+                reference.child("UsersMachines").child(userModel.getId()).child(key).setValue(machine).addOnCompleteListener(task -> {
 
                     if (task.isComplete() && task.isSuccessful()) {
 
@@ -345,6 +432,9 @@ public class UserDatabase {
                                         Objects.requireNonNull(machinesResult.get(key)).get("mLongitude"),
                                         Objects.requireNonNull(machinesResult.get(key)).get("mRepresentativeName"),
                                         Objects.requireNonNull(machinesResult.get(key)).get("userID")));
+
+
+                                Log.i(TAG, "getUserMachines(): machines size" + machines.size());
                             }
 
                             if (callback != null)
@@ -387,9 +477,15 @@ public class UserDatabase {
                         Map<String, Map<String, String>> result = (Map<String, Map<String, String>>) dataSnapshot.getValue();
                         if (result != null) {
                             for (String key : result.keySet()) {
-                                if (Objects.requireNonNull(Objects.requireNonNull(result.get(key)).get("mMachineId")).matches(machineCode)) {
-                                    mMachineIsFounded = true;
-                                    break;
+                                try {
+                                    if (result.get(key) != null && result.get(key).containsKey("mMachineId")) {
+                                        if (Objects.requireNonNull(Objects.requireNonNull(result.get(key)).get("mMachineId")).matches(machineCode)) {
+                                            mMachineIsFounded = true;
+                                            break;
+                                        }
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
                                 }
                             }
                         }
@@ -405,6 +501,7 @@ public class UserDatabase {
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
+                        callback.onMachineExists(false);
                     }
                 }
 
@@ -469,7 +566,7 @@ public class UserDatabase {
                 Log.i("updateMachine", "machine is updated");
 
                 if (callback != null)
-                    updateMachinePerUser(machine,callback);
+                    updateMachinePerUser(machine, callback);
 
             } else {
 
@@ -484,12 +581,12 @@ public class UserDatabase {
         });
     }
 
-    public void updateMachinePerUser(MachineModel machine, final SearchActivityCallback callback) {
+    private void updateMachinePerUser(MachineModel machine, final SearchActivityCallback callback) {
 
         Log.i("updateMachinePerUser", "machine ID" + machine.getmMachineId());
 
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
-        reference.child("machines").child(machine.getUserID()).child(machine.getmUID()).setValue(machine).addOnCompleteListener(new OnCompleteListener<Void>() {
+        reference.child("UsersMachines").child(machine.getUserID()).child(machine.getmUID()).setValue(machine).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isComplete() && task.isSuccessful()) {

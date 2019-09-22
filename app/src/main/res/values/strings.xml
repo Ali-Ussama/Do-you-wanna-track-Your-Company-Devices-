@@ -46,9 +46,14 @@
     </string-array>
 
     <string name="title_activity_maps">الخريطة</string>
-    <string name="machine_code">ادخل كود الماكينه</string>
+    <string name="machine_code1">ادخل كود الماكينه 1</string>
+    <string name="machine_code2">ادخل كود الماكينه 2</string>
+    <string name="machine_code3">ادخل كود الماكينه 3</string>
+    <string name="machine_code4">ادخل كود الماكينه 4</string>
+
     <string name="client_name">ادخل اسم العميل</string>
-    <string name="add_location">حدد موقعك</string>
+    <string name="add_location">العنوان</string>
+    <string name="city">ادخل المدينة</string>
     <string name="add_machine_button">اضافة ماكينة</string>
 
     <string name="GPSAlertDialogTitle">اعداد تحديد الموقع</string>

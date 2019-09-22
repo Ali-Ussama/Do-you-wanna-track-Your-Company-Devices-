@@ -28,29 +28,29 @@
 
     <ProgressBar
         android:id="@+id/activity_home_user_determinateBar_moreThan_20"
+        style="@android:style/Widget.Material.ProgressBar.Horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:indeterminate="true"
         android:indeterminateBehavior="repeat"
         android:indeterminateDuration="50"
-        app:layout_constraintTop_toBottomOf="@id/activity_home_user_app_bar_layout"
-        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
-        style="@android:style/Widget.Material.ProgressBar.Horizontal"
-        tools:targetApi="lollipop"
-        android:visibility="gone"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/activity_home_user_app_bar_layout"
+        tools:targetApi="lollipop" />
 
     <ProgressBar
         android:id="@+id/activity_home_user_determinateBar_lessThan_21"
+        style="@style/Widget.AppCompat.ProgressBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/CircularProgress"
-        style="@style/Widget.AppCompat.ProgressBar"
         android:indeterminate="true"
-        app:layout_constraintTop_toBottomOf="@id/activity_home_user_app_bar_layout"
-        app:layout_constraintStart_toStartOf="parent"
+        android:theme="@style/CircularProgress"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
-        android:visibility="gone"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/activity_home_user_app_bar_layout" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -61,88 +61,138 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/activity_home_user_determinateBar_moreThan_20">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/activity_home_user_machine_code_input_layout"
-            android:layout_width="250dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:orientation="horizontal">
 
-            <EditText
-                android:id="@+id/activity_home_user_machine_code_edit_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/machine_code"
-                android:inputType="text" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/activity_home_user_machine_code_fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_add_a_photo_black_24dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/activity_home_user_machine_code_input_layout"
-            app:layout_constraintTop_toTopOf="parent"
-            />
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/activity_home_user_client_name_input_layout"
+        <EditText
+            android:id="@+id/activity_home_user_machine_code_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:hint="@string/machine_code1"
+            android:padding="12dp"
+            android:inputType="text"
+            android:gravity="center"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/activity_home_user_machine_code_input_layout">
+            app:layout_constraintTop_toTopOf="parent"
+            android:background="@drawable/customer_background"/>
+
+        <EditText
+            android:id="@+id/activity_home_user_machine_code_edit_text2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/machine_code2"
+            android:padding="12dp"
+            android:layout_marginTop="10dp"
+            android:inputType="text"
+            android:gravity="center"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/activity_home_user_machine_code_edit_text"
+            android:background="@drawable/customer_background"/>
+
+        <EditText
+            android:id="@+id/activity_home_user_machine_code_edit_text3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/machine_code3"
+            android:padding="12dp"
+            android:gravity="center"
+            android:layout_marginTop="10dp"
+            android:inputType="text"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/activity_home_user_machine_code_edit_text2"
+            android:background="@drawable/customer_background"/>
+
+        <EditText
+            android:id="@+id/activity_home_user_machine_code_edit_text4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/machine_code4"
+            android:padding="12dp"
+            android:gravity="center"
+            android:layout_marginTop="10dp"
+            android:inputType="text"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/activity_home_user_machine_code_edit_text3"
+            android:background="@drawable/customer_background"/>
+
+
+        <!--        <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+        <!--            android:id="@+id/activity_home_user_machine_code_fab"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:src="@drawable/ic_add_a_photo_black_24dp"-->
+        <!--            app:layout_constraintEnd_toEndOf="parent"-->
+        <!--            app:layout_constraintStart_toEndOf="@id/activity_home_user_machine_code_input_layout"-->
+        <!--            app:layout_constraintTop_toTopOf="parent"-->
+        <!--            />-->
+
+
 
             <EditText
                 android:id="@+id/activity_home_user_client_name_edit_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:padding="12dp"
+                android:gravity="center"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/activity_home_user_machine_code_edit_text4"
+                android:background="@drawable/customer_background"
                 android:hint="@string/client_name"
                 android:inputType="text" />
-        </com.google.android.material.textfield.TextInputLayout>
 
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/activity_home_user_client_phone_input_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/activity_home_user_client_name_input_layout">
 
             <EditText
                 android:id="@+id/activity_home_user_client_phone_edit_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:padding="12dp"
+                android:gravity="center"
+                android:background="@drawable/customer_background"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/activity_home_user_client_name_edit_text"
                 android:hint="@string/client_phone"
                 android:inputType="phone" />
 
-        </com.google.android.material.textfield.TextInputLayout>
+        <EditText
+            android:id="@+id/activity_home_user_city_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:padding="12dp"
+            android:gravity="center"
+            android:background="@drawable/customer_background"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/activity_home_user_client_phone_edit_text"
+            android:hint="@string/city"
+            android:inputType="text" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/activity_home_user_add_location_fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
             android:src="@drawable/ic_my_location_black_24dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/activity_home_user_client_phone_input_layout" />
+            app:layout_constraintTop_toBottomOf="@id/activity_home_user_city_edit_text" />
 
         <EditText
             android:id="@+id/activity_home_user_add_location_text_view"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
+            android:layout_marginStart="8dp"
+            android:hint="@string/add_location"
             android:maxLines="1"
             android:textDirection="ltr"
-            android:hint="@string/add_location"
             android:textSize="14sp"
+            android:padding="8dp"
+            android:background="@drawable/customer_background"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/activity_home_user_add_location_fab"
-            app:layout_constraintTop_toBottomOf="@id/activity_home_user_client_phone_input_layout" />
+            app:layout_constraintTop_toBottomOf="@id/activity_home_user_city_edit_text" />
 
 
         <Button
