@@ -51,6 +51,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.content.Context.MODE_PRIVATE;
 
@@ -80,18 +83,60 @@ public class AllMachinesRecAdapter extends RecyclerView.Adapter<AllMachinesRecAd
     @Override
     public void onBindViewHolder(viewHolder holder, int position) {
         try {
-            holder.machineID.setText(data.get(position).getmMachineId());
+
             holder.clientName.setText(data.get(position).getmClientName());
             holder.mClientPhone.setText(data.get(position).getmClientPhone());
-            holder.mAddress.setText(data.get(position).getmAddress());
+            holder.mAddress.setText(data.get(position).getmCityName().concat(" - ").concat(data.get(position).getmAddress()));
             holder.mRepresentative.setText(data.get(position).getmRepresentativeName());
 
-            holder.machineCodeEditText.setText(data.get(position).getmMachineId());
+
+            if (data.get(position).getmMachineId() != null && !data.get(position).getmMachineId().isEmpty()) {
+
+                holder.machineID.setVisibility(View.VISIBLE);
+                holder.machineID.setText(data.get(position).getmMachineId());
+
+            } else {
+                holder.machineID.setVisibility(View.GONE);
+            }
+
+            if (data.get(position).getmMachineId2() != null && !data.get(position).getmMachineId2().isEmpty()) {
+
+                holder.mMachineIDTV2.setVisibility(View.VISIBLE);
+                holder.mMachineIDTV2.setText(data.get(position).getmMachineId2());
+
+            } else {
+                holder.mMachineIDTV2.setVisibility(View.GONE);
+            }
+
+            if (data.get(position).getmMachineId3() != null && !data.get(position).getmMachineId3().isEmpty()) {
+
+                holder.mMachineIDTV3.setVisibility(View.VISIBLE);
+                holder.mMachineIDTV3.setText(data.get(position).getmMachineId3());
+
+            } else {
+
+                holder.mMachineIDTV3.setVisibility(View.GONE);
+
+            }
+
+            if (data.get(position).getmMachineId4() != null && !data.get(position).getmMachineId4().isEmpty()) {
+                holder.mMachineIDTV4.setVisibility(View.VISIBLE);
+                holder.mMachineIDTV4.setText(data.get(position).getmMachineId4());
+            } else {
+                holder.mMachineIDTV4.setVisibility(View.GONE);
+            }
+
             holder.clientNameEditText.setText(data.get(position).getmClientName());
             holder.clientPhoneEditText.setText(data.get(position).getmClientPhone());
             holder.currentAddressEditText.setText(data.get(position).getmAddress());
             holder.mCurrentAddressName = data.get(position).getmAddress();
 
+            holder.machineCodeEditText.setText(data.get(position).getmMachineId());
+            holder.mMachineIDTV2.setText(data.get(position).getmMachineId2() != null && !data.get(position).getmMachineId2().isEmpty() ? data.get(position).getmMachineId2() : "");
+            holder.mMachineIDTV3.setText(data.get(position).getmMachineId3() != null && !data.get(position).getmMachineId3().isEmpty() ? data.get(position).getmMachineId3() : "");
+            holder.mMachineIDTV4.setText(data.get(position).getmMachineId4() != null && !data.get(position).getmMachineId4().isEmpty() ? data.get(position).getmMachineId4() : "");
+
+            holder.mCityNameET.setText(data.get(position).getmCityName() != null && !data.get(position).getmCityName().isEmpty() ? data.get(position).getmCityName() : "");
             holder.mCurrentLocation = new Location("selected_place");
             holder.mCurrentLocation.setLatitude(Double.parseDouble(data.get(position).getmLatitude()));
             holder.mCurrentLocation.setLongitude(Double.parseDouble(data.get(position).getmLongitude()));
@@ -142,12 +187,35 @@ public class AllMachinesRecAdapter extends RecyclerView.Adapter<AllMachinesRecAd
 
     public class viewHolder extends RecyclerView.ViewHolder implements View.OnTouchListener, AdapterView.OnItemSelectedListener, View.OnClickListener {
 
+        @BindView(R.id.AMRVRI_machine_code_edit_text2)
+        EditText machineCodeEditText2;
+
+        @BindView(R.id.AMRVRI_machine_code_edit_text3)
+        EditText machineCodeEditText3;
+
+        @BindView(R.id.AMRVRI_machine_code_edit_text4)
+        EditText machineCodeEditText4;
+
+        @BindView(R.id.AMRVRI_city_edit_text)
+        EditText mCityNameET;
+
+        @BindView(R.id.AMRVRI_machine_ID_TextView2)
+        TextView mMachineIDTV2;
+
+        @BindView(R.id.AMRVRI_machine_ID_TextView3)
+        TextView mMachineIDTV3;
+
+        @BindView(R.id.AMRVRI_machine_ID_TextView4)
+        TextView mMachineIDTV4;
+
         EditText machineCodeEditText;
 
-        public TextView machineID, clientName, mClientPhone, mAddress, mRepresentative;
+        //        @BindView(R.id.AMRVRI_options_spinner)
         Spinner mOptionsSpinner;
-        ConstraintLayout row_item_layout, update_layout;
 
+
+        public TextView machineID, clientName, mClientPhone, mAddress, mRepresentative;
+        ConstraintLayout row_item_layout, update_layout;
         EditText clientNameEditText, clientPhoneEditText;
         EditText currentAddressEditText;
         FloatingActionButton addLocationFab;
@@ -159,12 +227,6 @@ public class AllMachinesRecAdapter extends RecyclerView.Adapter<AllMachinesRecAd
         //declare current location var
         private Location mCurrentLocation;
 
-        //declare Place Pick Builder request code var
-//        private int PLACE_PICKER_REQUEST = 1;
-//        FloatingActionButton mScanMachineSerialNumberFab;
-        //declare Place Pick Builder reference
-//        private PlacePicker.IntentBuilder builder;
-
         PlacesClient placesClient;
 
         private GPSTracker mGpsTracker;
@@ -173,13 +235,20 @@ public class AllMachinesRecAdapter extends RecyclerView.Adapter<AllMachinesRecAd
 
         viewHolder(View v) {
             super(v);
+            try {
+                ButterKnife.bind(this, v);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             init(v);
-            mOptionsSpinner.setOnTouchListener(this);
-            mOptionsSpinner.setOnItemSelectedListener(this);
+
+
         }
 
         private void init(View v) {
             try {
+
+
                 Places.initialize(v.getContext(), "AIzaSyAAPX5De3aThZZMntG0Gz0wKd9xeGp8aAQ");
                 placesClient = Places.createClient(v.getContext());
 
@@ -188,27 +257,20 @@ public class AllMachinesRecAdapter extends RecyclerView.Adapter<AllMachinesRecAd
                 clientName = v.findViewById(R.id.AMRVRI_clientName_textView);
                 mClientPhone = v.findViewById(R.id.AMRVRI_phone_textView);
                 mAddress = v.findViewById(R.id.AMRVRI_clientAddress_textView);
-                mOptionsSpinner = v.findViewById(R.id.AMRVRI_options_spinner);
                 mRepresentative = v.findViewById(R.id.AMRVRI_representative_textView);
-//                mScanMachineSerialNumberFab = v.findViewById(R.id.AMRVRI_machine_code_fab);//TODO
                 row_item_layout = v.findViewById(R.id.AMRVRI_row_item_layout);
                 update_layout = v.findViewById(R.id.AMRVRI_update_layout);
+                mOptionsSpinner = v.findViewById(R.id.AMRVRI_options_spinner);
 
-                ArrayAdapter<CharSequence> adapter;
-                String userType = CheckUserType();
-//                if (!userType.isEmpty() && userType.matches("user")) {
-//                    adapter = ArrayAdapter.createFromResource(v.getContext(),
-//                            R.array.user_machines_row_item_options_spinner, android.R.layout.simple_spinner_item);
-//                } else {
-                    adapter = ArrayAdapter.createFromResource(v.getContext(),
-                            R.array.machines_row_item_options_spinner, android.R.layout.simple_spinner_item);
-//                }
-                // Specify the layout to use when the list of choices appears
+                ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(v.getContext(),
+                        R.array.machines_row_item_options_spinner, android.R.layout.simple_spinner_item);
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
                 // Apply the adapter to the spinner
                 mOptionsSpinner.setAdapter(adapter);
                 mOptionsSpinner.setSelection(getAdapterPosition(), false);
+                mOptionsSpinner.setOnTouchListener(this);
+                mOptionsSpinner.setOnItemSelectedListener(this);
                 //----------------------------------------------------------------------------------
                 // the update view vars
 
@@ -260,23 +322,23 @@ public class AllMachinesRecAdapter extends RecyclerView.Adapter<AllMachinesRecAd
 
                 //Admin actions on machines
 //                if (userType.matches(ADMIN)) {
-                    Log.i("onItemSelected", "User Machine Action");
-                    if (mSpinnerCreated) {
-                        Log.i("onItemSelected", "item position" + i);
-                        if (i == 0) {
-                            Log.i("onItemSelected", "الغاء");
-                            update_layout.setVisibility(View.GONE);
-                        } else if (i == 1) {
-                            displayAlertDialog(view);
-                        } else if (i == 2) {
-                            updateMachine();
-                        } else if (i == 3) {
-                            //share current location
-                            shareCurrentLocation(view);
-                            mOptionsSpinner.setSelection(getAdapterPosition(), false);
-                            mOptionsSpinner.setSelection(0, true);
-                        }
+                Log.i("onItemSelected", "User Machine Action");
+                if (mSpinnerCreated) {
+                    Log.i("onItemSelected", "item position" + i);
+                    if (i == 0) {
+                        Log.i("onItemSelected", "الغاء");
+                        update_layout.setVisibility(View.GONE);
+                    } else if (i == 1) {
+                        displayAlertDialog(view);
+                    } else if (i == 2) {
+                        updateMachine();
+                    } else if (i == 3) {
+                        //share current location
+                        shareCurrentLocation(view);
+                        mOptionsSpinner.setSelection(getAdapterPosition(), false);
+                        mOptionsSpinner.setSelection(0, true);
                     }
+                }
 //                } else {//User actions on machines
 //                    Log.i("onItemSelected", "User Machine Action");
 //                    if (mSpinnerCreated) {
@@ -389,7 +451,7 @@ public class AllMachinesRecAdapter extends RecyclerView.Adapter<AllMachinesRecAd
 
                 String clientName = data.get(getAdapterPosition()).getmAddress().trim();
 
-                Uri gmmIntentUri = Uri.parse("geo:" + latitude + "," + longitude + "?q=" + latitude + "," + longitude + "("+clientName+")&z=20");
+                Uri gmmIntentUri = Uri.parse("geo:" + latitude + "," + longitude + "?q=" + latitude + "," + longitude + "(" + clientName + ")&z=20");
                 Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
                 mapIntent.setPackage("com.google.android.apps.maps");
                 if (mapIntent.resolveActivity(itemView.getContext().getPackageManager()) != null) {
@@ -405,7 +467,8 @@ public class AllMachinesRecAdapter extends RecyclerView.Adapter<AllMachinesRecAd
             try {
                 Log.i("updateMachineOnClick", "is called");
 
-                if (machineCodeEditText.getText() == null || machineCodeEditText.getText().toString().isEmpty()) {
+                if ((machineCodeEditText.getText() == null || machineCodeEditText.getText().toString().isEmpty()) && (machineCodeEditText2.getText() == null || machineCodeEditText2.getText().toString().isEmpty())
+                        && (machineCodeEditText3.getText() == null || machineCodeEditText3.getText().toString().isEmpty()) && (machineCodeEditText4.getText() == null || machineCodeEditText4.getText().toString().isEmpty())) {
                     Log.i("updateMachineOnClick", "machineCodeEditText is empty");
                     machineCodeEditText.setError(v.getContext().getString(R.string.required));
 
@@ -417,6 +480,10 @@ public class AllMachinesRecAdapter extends RecyclerView.Adapter<AllMachinesRecAd
                     Log.i("updateMachineOnClick", "clientPhoneEditText is empty");
                     clientPhoneEditText.setError(v.getContext().getString(R.string.required));
 
+                } else if (mCityNameET.getText() == null || mCityNameET.getText().toString().isEmpty()) {
+
+                    mCityNameET.setError(v.getContext().getString(R.string.required));
+
                 } else if (currentAddressEditText.getText() == null || currentAddressEditText.getText().toString().isEmpty()) {
                     currentAddressEditText.setError(v.getContext().getString(R.string.required));
                 } else {
@@ -427,6 +494,11 @@ public class AllMachinesRecAdapter extends RecyclerView.Adapter<AllMachinesRecAd
                     }
 
                     String mMachineId = machineCodeEditText.getText().toString();
+                    String mMachineId2 = machineCodeEditText2.getText() != null && !machineCodeEditText2.getText().toString().isEmpty() ? machineCodeEditText2.getText().toString() : "";
+                    String mMachineId3 = machineCodeEditText3.getText() != null && !machineCodeEditText3.getText().toString().isEmpty() ? machineCodeEditText3.getText().toString() : "";
+                    String mMachineId4 = machineCodeEditText4.getText() != null && !machineCodeEditText4.getText().toString().isEmpty() ? machineCodeEditText4.getText().toString() : "";
+
+                    String cityName = mCityNameET.getText().toString().trim();
                     String clientName = clientNameEditText.getText().toString();
                     String clientPhone = clientPhoneEditText.getText().toString();
                     String currentLocationLatitude = String.valueOf(mCurrentLocation.getLatitude());
@@ -438,8 +510,12 @@ public class AllMachinesRecAdapter extends RecyclerView.Adapter<AllMachinesRecAd
                     mMachine = new MachineModel(
                             data.get(getAdapterPosition()).getmUID(),
                             mMachineId,
+                            mMachineId2,
+                            mMachineId3,
+                            mMachineId4,
                             clientName,
                             clientPhone,
+                            cityName,
                             mCurrentAddressName,
                             currentLocationLatitude,
                             currentLocationLongitude,

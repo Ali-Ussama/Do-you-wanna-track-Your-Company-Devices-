@@ -71,6 +71,8 @@ public class HomeUserActivity extends AppCompatActivity implements View.OnClickL
     @BindView(R.id.activity_home_user_machine_code_edit_text4)
     EditText machineCodeEditText4;
 
+    @BindView(R.id.activity_home_user_city_edit_text)
+    EditText mCityNameET;
 
     public static EditText machineCodeEditText;
     EditText clientNameEditText, clientPhoneEditText;
@@ -79,7 +81,9 @@ public class HomeUserActivity extends AppCompatActivity implements View.OnClickL
     Button addMachineButton;
 
     String mCurrentAddressName;
-    public static String mMachineId;
+    public static String mMachineId, mMachineId2, mMachineId3, mMachineId4;
+
+    private String cityName;
 
     //declare current location var
     private Location mCurrentLocation;
@@ -228,9 +232,10 @@ public class HomeUserActivity extends AppCompatActivity implements View.OnClickL
             } else if (R.id.activity_home_user_add_location_fab == view.getId()) {
 //                getLatestKnownLocation();
                 addCurrentLocationOnClick();
-            } else if (R.id.activity_home_user_machine_code_fab == view.getId()) {
-                ScanSerialNumber();
             }
+//            else if (R.id.activity_home_user_machine_code_fab == view.getId()) {
+//                ScanSerialNumber();
+//            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -307,23 +312,36 @@ public class HomeUserActivity extends AppCompatActivity implements View.OnClickL
 
     private void addMachineOnClick() {
         try {
-            if (machineCodeEditText.getText() == null || machineCodeEditText.getText().toString().isEmpty()) {
+            if ((machineCodeEditText.getText() == null || machineCodeEditText.getText().toString().isEmpty()) && (machineCodeEditText2.getText() == null || machineCodeEditText2.getText().toString().isEmpty())
+            && (machineCodeEditText3.getText() == null || machineCodeEditText3.getText().toString().isEmpty()) && (machineCodeEditText4.getText() == null || machineCodeEditText4.getText().toString().isEmpty())) {
                 machineCodeEditText.setError(getString(R.string.required));
 
             } else if (clientNameEditText.getText() == null || clientNameEditText.getText().toString().isEmpty()) {
+
                 clientNameEditText.setError(getString(R.string.required));
 
             } else if (clientPhoneEditText.getText() == null || clientPhoneEditText.getText().toString().isEmpty()) {
+
                 clientPhoneEditText.setError(getString(R.string.required));
 
             } else if (mCurrentLocation == null) {
+
                 Toast.makeText(this, getString(R.string.please_choose_your_current_location), Toast.LENGTH_SHORT).show();
 
-            } else if (currentAddressEditText.getText() == null || currentAddressEditText.getText().toString().isEmpty()) {
+            }else if (mCityNameET.getText() == null || mCityNameET.getText().toString().isEmpty()){
+
+                mCityNameET.setError(getString(R.string.required));
+
+            }else if (currentAddressEditText.getText() == null || currentAddressEditText.getText().toString().isEmpty()) {
                 currentAddressEditText.setError("مطلوب");
             } else {
                 showLoading();
                 mMachineId = machineCodeEditText.getText().toString();
+                mMachineId2 = machineCodeEditText2.getText() != null && !machineCodeEditText2.getText().toString().isEmpty() ? machineCodeEditText2.getText().toString() : "";
+                mMachineId3 = machineCodeEditText3.getText() != null && !machineCodeEditText3.getText().toString().isEmpty() ? machineCodeEditText3.getText().toString() : "";
+                mMachineId4 = machineCodeEditText4.getText() != null && !machineCodeEditText4.getText().toString().isEmpty() ? machineCodeEditText4.getText().toString() : "";
+
+                cityName = mCityNameET.getText().toString().trim();
                 String clientName = clientNameEditText.getText().toString();
                 String clientPhone = clientPhoneEditText.getText().toString();
                 String currentLocationLatitude = String.valueOf(mCurrentLocation.getLatitude());
@@ -331,10 +349,15 @@ public class HomeUserActivity extends AppCompatActivity implements View.OnClickL
                 String mCurrentAddressName = currentAddressEditText.getText().toString();
                 String userName = getUsername();
                 String userID = getUserID();
+
                 mMachine = new MachineModel(
                         mMachineId,
+                        mMachineId2,
+                        mMachineId3,
+                        mMachineId4,
                         clientName,
                         clientPhone,
+                        cityName,
                         mCurrentAddressName,
                         currentLocationLatitude,
                         currentLocationLongitude,
@@ -354,7 +377,6 @@ public class HomeUserActivity extends AppCompatActivity implements View.OnClickL
             e.printStackTrace();
         }
     }
-
 
     @Override
     public void onMachineExists(boolean status) {
@@ -414,12 +436,16 @@ public class HomeUserActivity extends AppCompatActivity implements View.OnClickL
                     Log.i("mChangeUIHandler", "displaying toast");
 
                     machineCodeEditText.setText("");
+                    machineCodeEditText2.setText("");
+                    machineCodeEditText3.setText("");
+                    machineCodeEditText4.setText("");
                     clientNameEditText.setText("");
                     clientPhoneEditText.setText("");
                     currentAddressEditText.setText("");
+                    mCityNameET.setText("");
                     mMachine = null;
                     mCurrentAddressName = null;
-
+                    mCurrentLocation = null;
                     Toast.makeText(HomeUserActivity.this, getString(R.string.machineAddedSuccessfully), Toast.LENGTH_SHORT).show();
 
                 } catch (Exception e) {
